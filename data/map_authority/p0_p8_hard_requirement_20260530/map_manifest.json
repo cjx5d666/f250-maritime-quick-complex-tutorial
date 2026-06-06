@@ -1,0 +1,23 @@
+{
+  "coordinate_extent": {
+    "x": [
+      0.0,
+      300.0
+    ],
+    "y": [
+      -120.0,
+      120.0
+    ]
+  },
+  "outputs": [
+    "01_clean_visual_base.png",
+    "02_visual_planner_obstacles.png",
+    "03_visual_planner_route_p0_p8.png",
+    "visual_mesh_footprints.csv",
+    "route_waypoints.csv",
+    "planner_obstacles.csv",
+    "map_layer_index.csv"
+  ],
+  "scene_path": "${F250_PROJECT_ROOT}/catkin_ws/src/f250_maritime_uav_sim/config/scenes/level_m_gps_assets_quick_complex.yaml",
+  "source": "generated from active scene YAML plus transformed mesh/model geometry"
+}

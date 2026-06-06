@@ -1,0 +1,27 @@
+{
+  "constraints": {
+    "dynamic_obstacles_changed": false,
+    "ego_r4h_params_changed": false,
+    "map_static_obstacles_changed": false,
+    "x_y_changed": false,
+    "yaw_changed_indices": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "z_changed": false
+  },
+  "generated_at": "2026-06-01",
+  "outputs": [
+    "waypoint_zyaw_reestimate.csv",
+    "waypoint_zyaw_reestimate_manifest.json"
+  ],
+  "scene_path": "${F250_PROJECT_ROOT}/catkin_ws/src/f250_maritime_uav_sim/config/scenes/level_m_gps_assets_quick_complex.yaml",
+  "scope": "F250 R4_H quick-complex P0-P8 z/yaw reestimate only",
+  "source_runs": [
+    "cache/quick_complex_final_20260530/runs/lidar_lidar_R4_H_r1",
+    "cache/quick_complex_final_20260530/runs/lidar_lidar_R4_H_r2",
+    "cache/quick_complex_final_20260530/runs/lidar_lidar_R4_H_r3"
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "changed_route_fields": {
+    "x_y_changed": false,
+    "yaw_changed_indices": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "z_changed": false
+  },
+  "generated_at": "2026-06-02",
+  "offline_r4h_replay": [
+    {
+      "metric_3_10_pass_count": 8,
+      "metric_3_10_required_count": 8,
+      "metric_3_6_max_error_ratio": 0.05436753958047766,
+      "metric_3_6_mean_error_ratio": 0.019781808918055088,
+      "metric_3_7_cloud_entry_count": 0,
+      "metric_3_7_geometry_entry_count": 0,
+      "metric_3_7_static_min_clearance_m": 0.7741187792483855,
+      "metric_3_9_final_error_ratio": 0.0022238755365991923,
+      "ok": true,
+      "p8_completed": true,
+      "run": "lidar_lidar_R4_H_r1"
+    },
+    {
+      "metric_3_10_pass_count": 8,
+      "metric_3_10_required_count": 8,
+      "metric_3_6_max_error_ratio": 0.031868187561951346,
+      "metric_3_6_mean_error_ratio": 0.014002291077639924,
+      "metric_3_7_cloud_entry_count": 0,
+      "metric_3_7_geometry_entry_count": 0,
+      "metric_3_7_static_min_clearance_m": 0.8086800027841847,
+      "metric_3_9_final_error_ratio": 0.0019204885330139766,
+      "ok": true,
+      "p8_completed": true,
+      "run": "lidar_lidar_R4_H_r2"
+    },
+    {
+      "metric_3_10_pass_count": 8,
+      "metric_3_10_required_count": 8,
+      "metric_3_6_max_error_ratio": 0.02919604792592023,
+      "metric_3_6_mean_error_ratio": 0.013634998845168552,
+      "metric_3_7_cloud_entry_count": 0,
+      "metric_3_7_geometry_entry_count": 0,
+      "metric_3_7_static_min_clearance_m": 1.021015358986419,
+      "metric_3_9_final_error_ratio": 0.0017872017938693158,
+      "ok": true,
+      "p8_completed": true,
+      "run": "lidar_lidar_R4_H_r3"
+    }
+  ],
+  "result_dir": "${F250_PROJECT_ROOT}/evidence/expected_route/zyaw_metrics",
+  "result_symlink": "${F250_PROJECT_ROOT}/evidence/expected_route/zyaw_metrics",
+  "scope": "F250 R4_H quick-complex retained metric baseline for next tuning round",
+  "online_repeats_3x": {
+    "result_dir": "cache/f250_r4h_zyaw_metrics_20260601/online_repeats_3x_20260601",
+    "repeats_summary": "cache/f250_r4h_zyaw_metrics_20260601/online_repeats_3x_20260601/repeats_summary.json",
+    "effective_repeat_count": 3,
+    "all_passed": true,
+    "all_metric_ok": true,
+    "all_p8_completed": true,
+    "all_metric_3_7_zero_geometry_cloud_entries": true,
+    "all_metric_3_10_8_of_8": true,
+    "worst_static_min_clearance_m": 0.6988175318620359,
+    "worst_dynamic_min_clearance_m": 11.013147861764548,
+    "max_metric_3_6_error_ratio": 0.048640304106574744,
+    "max_metric_3_9_final_error_m": 0.6900906186419891,
+    "runs": [
+      {
+        "run": "repeat1",
+        "metric_ok": true,
+        "p8_completed": true,
+        "final_hold_seen_sec": 0.20400000000000773,
+        "metric_3_7_geometry_entry_count": 0,
+        "metric_3_7_cloud_entry_count": 0,
+        "metric_3_10_pass_count": 8,
+        "metric_3_10_required_count": 8,
+        "static_min_clearance_m": 0.9322971108057374,
+        "dynamic_min_clearance_m": 13.24115279636861,
+        "metric_summary": "cache/f250_r4h_zyaw_metrics_20260601/online_repeats_3x_20260601/repeat1/live_metric_runs/f250_r4h_zyaw_repeat1_20260601/metric_summary.json",
+        "metric_waypoints": "cache/f250_r4h_zyaw_metrics_20260601/online_repeats_3x_20260601/repeat1/live_metric_runs/f250_r4h_zyaw_repeat1_20260601/metric_waypoints.csv"
+      },
+      {
+        "run": "repeat2",
+        "metric_ok": true,
+        "p8_completed": true,
+        "final_hold_seen_sec": 0.23199999999999932,
+        "metric_3_7_geometry_entry_count": 0,
+        "metric_3_7_cloud_entry_count": 0,
+        "metric_3_10_pass_count": 8,
+        "metric_3_10_required_count": 8,
+        "static_min_clearance_m": 0.6988175318620359,
+        "dynamic_min_clearance_m": 11.013147861764548,
+        "metric_summary": "cache/f250_r4h_zyaw_metrics_20260601/online_repeats_3x_20260601/repeat2/live_metric_runs/f250_r4h_zyaw_repeat2_20260601/metric_summary.json",
+        "metric_waypoints": "cache/f250_r4h_zyaw_metrics_20260601/online_repeats_3x_20260601/repeat2/live_metric_runs/f250_r4h_zyaw_repeat2_20260601/metric_waypoints.csv"
+      },
+      {
+        "run": "repeat3",
+        "metric_ok": true,
+        "p8_completed": true,
+        "final_hold_seen_sec": 0.22799999999998022,
+        "metric_3_7_geometry_entry_count": 0,
+        "metric_3_7_cloud_entry_count": 0,
+        "metric_3_10_pass_count": 8,
+        "metric_3_10_required_count": 8,
+        "static_min_clearance_m": 1.0342480509106875,
+        "dynamic_min_clearance_m": 12.194103431385837,
+        "metric_summary": "cache/f250_r4h_zyaw_metrics_20260601/online_repeats_3x_20260601/repeat3/live_metric_runs/f250_r4h_zyaw_repeat3_20260601/metric_summary.json",
+        "metric_waypoints": "cache/f250_r4h_zyaw_metrics_20260601/online_repeats_3x_20260601/repeat3/live_metric_runs/f250_r4h_zyaw_repeat3_20260601/metric_waypoints.csv"
+      }
+    ],
+    "display_policy": "realtime_terminal_only"
+  },
+  "display_policy": "no_retained_live_display",
+  "retained_files": {
+    "waypoint_zyaw_reestimate": "waypoint_zyaw_reestimate.csv",
+    "waypoint_zyaw_manifest": "waypoint_zyaw_reestimate_manifest.json",
+    "online_repeats_summary": "online_repeats_3x_20260601/repeats_summary.json"
+  },
+  "notes": [
+    "Current retained package is a compact tuning baseline only.",
+    "3.7 is surfaced as obstacle-safe pass/fail; detailed geometry/cloud fields remain raw evidence only.",
+    "3.10 uses P1-P8 x/y/z arrival only; yaw is recorded only."
+  ]
+}

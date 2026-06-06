@@ -1,0 +1,98 @@
+{
+  "O1_O2_along_diff_m": -0.0002895992659404101,
+  "O1_O2_side_sum_m": -0.000977606659374075,
+  "O1_side_m": 8.999639000153612,
+  "O2_side_m": -9.000616606812986,
+  "O3_side_m": 0.0,
+  "O4_clearance_minus_radius_m": 0.7813713940145419,
+  "O4_side_m": 0.0003110994969707291,
+  "O5_clearance_minus_radius_m": 1.0153776596798814,
+  "P1_behind_O3_m": 5.49993779559955,
+  "P1_side_m": 0.0004945053140381375,
+  "P2_P4_side_sum_m": -0.00020490604810152746,
+  "P2_ahead_O3_m": 3.9997998479321666,
+  "P2_side_m": 7.749883300829886,
+  "P3_behind_O4_m": 5.499937795599564,
+  "P3_side_m": 0.0008056048110219845,
+  "P4_ahead_O4_m": 4.000110947429135,
+  "P4_side_m": -7.7500882068779875,
+  "P56_angle_deg": -32.67089210826375,
+  "P56_vs_bridge_mid_tangent_deg": 0.00015908924870444707,
+  "P56_vs_wind_deg": 7.105427357601002e-15,
+  "P5_midline_offset_m": -0.0004015423826899678,
+  "P5_projection_vs_W1_m": 0.00011649573843897087,
+  "P6_midline_offset_m": -0.0005082225826527065,
+  "P6_projection_vs_W4_m": 0.00011649573841054917,
+  "P8_to_S2_signed_m": -4.076963677237195,
+  "bridge_mid_tangent_deg": -32.670733019015046,
+  "channel_width_m": 40.45480041213645,
+  "coords": {
+    "O3": [
+      101.363,
+      39.546
+    ],
+    "O4": [
+      115.183,
+      46.565
+    ],
+    "O5": [
+      197.5,
+      5.0
+    ],
+    "P0": [
+      55.0,
+      16.0
+    ],
+    "P1": [
+      96.459,
+      37.056
+    ],
+    "P2": [
+      101.42,
+      48.267
+    ],
+    "P3": [
+      110.279,
+      44.075
+    ],
+    "P4": [
+      122.259,
+      41.466
+    ],
+    "P5": [
+      156.735,
+      51.818
+    ],
+    "P6": [
+      189.077,
+      31.078
+    ],
+    "P8": [
+      238.24,
+      -110.381
+    ],
+    "S2": [
+      237.435,
+      -109.212
+    ],
+    "W1": [
+      145.816,
+      34.791
+    ],
+    "W4": [
+      178.158,
+      14.051
+    ]
+  },
+  "old_acceptance_threshold_failure_reasons": [
+    "planned_polyline static clearance 0.378 m below 1.500 m"
+  ],
+  "planned_dynamic_geometry_entry_count": 0,
+  "planned_dynamic_min_clearance_m": 3.2236337777410444,
+  "planned_static_geometry_entry_count": 0,
+  "planned_static_min_clearance_m": 0.37775256215849407,
+  "reference_line_angle_deg": 26.924278471418635,
+  "route_variant": "tight_hard_requirements_low_static_margin",
+  "wind_angle_deg": -32.67089210826374,
+  "wind_vs_bridge_mid_tangent_deg": 0.00015908924869734165
+}

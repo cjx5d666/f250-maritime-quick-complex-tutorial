@@ -1,0 +1,535 @@
+{
+  "audit_conclusion": "SAFE: FC 3.10 A/B and decagon geometry do not intersect planner obstacles",
+  "authority_dir": "${F250_PROJECT_ROOT}/data/map_authority/p0_p8_hard_requirement_20260530",
+  "created_at": "2026-06-05T05:39:21-07:00",
+  "direction": {
+    "policy": "u is the normalized reverse of ship center to three-mountain/island centroid direction",
+    "safe_u_xy": [
+      -0.9916184128767211,
+      0.1292010961402894
+    ],
+    "ship_to_mountain_centroid_xy": [
+      153.5,
+      -20.0
+    ]
+  },
+  "mountain_island_identification": {
+    "centers": [
+      {
+        "center_xy": [
+          135.0,
+          -105.0
+        ],
+        "name": "kauai_left_island_visual",
+        "style": "island"
+      },
+      {
+        "center_xy": [
+          270.0,
+          -12.0
+        ],
+        "name": "kauai_center_island_visual",
+        "style": "island"
+      },
+      {
+        "center_xy": [
+          135.0,
+          105.0
+        ],
+        "name": "kauai_right_island_visual",
+        "style": "island"
+      }
+    ],
+    "centroid_xy": [
+      180.0,
+      -4.0
+    ],
+    "policy": "three kauai/island/mountain visual mesh centers in visual_mesh_footprints.csv"
+  },
+  "p0_source": {
+    "label": "P0",
+    "name": "p0_h_midair_start",
+    "x": 55.0,
+    "y": 16.0,
+    "yaw_rad": 0.469929,
+    "z": 10.0,
+    "z_policy": "fixed 10 m for FC Metric 3.10"
+  },
+  "planner_obstacle_clearance": {
+    "closest_planner_obstacle": "o1_left_of_reference",
+    "closest_test_item": "decagon_vertex_01",
+    "conclusion": "SAFE",
+    "min_clearance_m": 26.32026864154964,
+    "per_obstacle": [
+      {
+        "closest_test_item": "decagon_vertex_01",
+        "min_clearance_m": 26.32026864154964,
+        "name": "o1_left_of_reference",
+        "shape": "cylinder",
+        "type": "buoy_cylinder"
+      },
+      {
+        "closest_test_item": "decagon_edge_00_01",
+        "min_clearance_m": 29.179676591095138,
+        "name": "o2_right_of_reference",
+        "shape": "cylinder",
+        "type": "buoy_cylinder"
+      },
+      {
+        "closest_test_item": "decagon_vertex_01",
+        "min_clearance_m": 47.508564323093125,
+        "name": "o3_on_reference",
+        "shape": "cylinder",
+        "type": "buoy_cylinder"
+      },
+      {
+        "closest_test_item": "decagon_vertex_01",
+        "min_clearance_m": 62.927015344663026,
+        "name": "o4_on_reference",
+        "shape": "cylinder",
+        "type": "buoy_cylinder"
+      },
+      {
+        "closest_test_item": "A_P0",
+        "min_clearance_m": 139.9239308163612,
+        "name": "o5_near_island_bank",
+        "shape": "cylinder",
+        "type": "buoy_cylinder"
+      },
+      {
+        "closest_test_item": "decagon_edge_00_01",
+        "min_clearance_m": 81.37048725953434,
+        "name": "w1_wind_channel_cloud",
+        "shape": "box",
+        "type": "static_box"
+      },
+      {
+        "closest_test_item": "velocity_2mps_A_B_segment",
+        "min_clearance_m": 90.8914240087174,
+        "name": "w2_wind_channel_cloud",
+        "shape": "box",
+        "type": "static_box"
+      },
+      {
+        "closest_test_item": "A_P0",
+        "min_clearance_m": 101.09969152958594,
+        "name": "w3_wind_channel_cloud",
+        "shape": "box",
+        "type": "static_box"
+      },
+      {
+        "closest_test_item": "A_P0",
+        "min_clearance_m": 111.84304052712871,
+        "name": "w4_wind_channel_cloud",
+        "shape": "box",
+        "type": "static_box"
+      },
+      {
+        "closest_test_item": "decagon_edge_09_00",
+        "min_clearance_m": 128.30441723651765,
+        "name": "d1_wamv_crossing_obstacle",
+        "shape": "box",
+        "type": "dynamic_obstacle"
+      }
+    ]
+  },
+  "planner_obstacle_count": 10,
+  "position_test": {
+    "R_m": 10.0,
+    "center_C_xy": [
+      45.08381587123279,
+      17.292010961402895
+    ],
+    "closure_point_xy": [
+      55.0,
+      16.0
+    ],
+    "decagon_points": [
+      {
+        "index": 0,
+        "x": 55.0,
+        "y": 16.0,
+        "z": 10.0
+      },
+      {
+        "index": 1,
+        "x": 53.86560233966944,
+        "y": 22.07533892661529,
+        "z": 10.0
+      },
+      {
+        "index": 2,
+        "x": 49.37686073033998,
+        "y": 26.323609149857322,
+        "z": 10.0
+      },
+      {
+        "index": 3,
+        "x": 43.24832190005958,
+        "y": 27.12211583784174,
+        "z": 10.0
+      },
+      {
+        "index": 4,
+        "x": 37.82087938062182,
+        "y": 24.165856576002604,
+        "z": 10.0
+      },
+      {
+        "index": 5,
+        "x": 35.16763174246557,
+        "y": 18.58402192280579,
+        "z": 10.0
+      },
+      {
+        "index": 6,
+        "x": 36.30202940279614,
+        "y": 12.508682996190498,
+        "z": 10.0
+      },
+      {
+        "index": 7,
+        "x": 40.790771012125596,
+        "y": 8.260412772948467,
+        "z": 10.0
+      },
+      {
+        "index": 8,
+        "x": 46.919309842405994,
+        "y": 7.461906084964049,
+        "z": 10.0
+      },
+      {
+        "index": 9,
+        "x": 52.34675236184375,
+        "y": 10.418165346803184,
+        "z": 10.0
+      }
+    ],
+    "denominator_m": 10.0,
+    "windows": 10
+  },
+  "schema": "f250_fc_3_10_geometry_audit_v1",
+  "ship_identification": {
+    "center_xy": [
+      26.5,
+      16.0
+    ],
+    "name": "oasis_of_the_seas_static_carrier",
+    "policy": "name/style match in visual_mesh_footprints.csv",
+    "style": "oasis"
+  },
+  "source_files": {
+    "map_manifest_json": "${F250_PROJECT_ROOT}/data/map_authority/p0_p8_hard_requirement_20260530/map_manifest.json",
+    "planner_obstacles_csv": "${F250_PROJECT_ROOT}/data/map_authority/p0_p8_hard_requirement_20260530/planner_obstacles.csv",
+    "route_waypoints_csv": "${F250_PROJECT_ROOT}/data/map_authority/p0_p8_hard_requirement_20260530/route_waypoints.csv",
+    "scene_yaml": "${F250_PROJECT_ROOT}/catkin_ws/src/f250_maritime_uav_sim/config/scenes/level_m_gps_assets_quick_complex.yaml",
+    "visual_mesh_footprints_csv": "${F250_PROJECT_ROOT}/data/map_authority/p0_p8_hard_requirement_20260530/visual_mesh_footprints.csv"
+  },
+  "source_policy": "Geometry is derived from authoritative CSV/JSON/YAML-backed map package; legacy or cached PNG files are not used as coordinate truth.",
+  "velocity_test": {
+    "A_xy": [
+      55.0,
+      16.0
+    ],
+    "B_xy": [
+      -4.497104772603265,
+      23.752065768417364
+    ],
+    "L_m": 60.0,
+    "note": "Legacy summary of the first velocity test; use velocity_tests for all formal speeds.",
+    "round_trips": 5,
+    "speed_mps": 2.0,
+    "windows": 10,
+    "z": 10.0
+  },
+  "velocity_tests": [
+    {
+      "A_xy": [
+        55.0,
+        16.0
+      ],
+      "B_xy": [
+        -4.497104772603265,
+        23.752065768417364
+      ],
+      "L_m": 60.0,
+      "command_velocity_policy": "desired world XY velocity is +speed*u or -speed*u on AB legs",
+      "endpoint_margin_m": 8.0,
+      "key": "2mps",
+      "leg_duration_sec": 30.0,
+      "length_adjusted": false,
+      "minimum_length_for_settle_eval_m": 36.0,
+      "planner_obstacle_clearance": {
+        "closest_planner_obstacle": "o1_left_of_reference",
+        "closest_test_item": "velocity_2mps_A_B_segment",
+        "conclusion": "SAFE",
+        "min_clearance_m": 29.179247466445055,
+        "per_obstacle": [
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 29.179247466445055,
+            "name": "o1_left_of_reference",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 29.179798156122352,
+            "name": "o2_right_of_reference",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 48.899441198920584,
+            "name": "o3_on_reference",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 64.39972380684236,
+            "name": "o4_on_reference",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 139.9239308163612,
+            "name": "o5_near_island_bank",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 81.42108663784502,
+            "name": "w1_wind_channel_cloud",
+            "shape": "box",
+            "type": "static_box"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 90.8914240087174,
+            "name": "w2_wind_channel_cloud",
+            "shape": "box",
+            "type": "static_box"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 101.09969152958594,
+            "name": "w3_wind_channel_cloud",
+            "shape": "box",
+            "type": "static_box"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 111.84304052712875,
+            "name": "w4_wind_channel_cloud",
+            "shape": "box",
+            "type": "static_box"
+          },
+          {
+            "closest_test_item": "velocity_2mps_A_B_segment",
+            "min_clearance_m": 128.31305560471733,
+            "name": "d1_wamv_crossing_obstacle",
+            "shape": "box",
+            "type": "dynamic_obstacle"
+          }
+        ]
+      },
+      "requested_L_m": 60.0,
+      "round_trips": 5,
+      "speed_mps": 2.0,
+      "windows": 10,
+      "z": 10.0
+    },
+    {
+      "A_xy": [
+        55.0,
+        16.0
+      ],
+      "B_xy": [
+        -34.245657158904905,
+        27.628098652626047
+      ],
+      "L_m": 90.0,
+      "command_velocity_policy": "desired world XY velocity is +speed*u or -speed*u on AB legs",
+      "endpoint_margin_m": 8.0,
+      "key": "4mps",
+      "leg_duration_sec": 22.5,
+      "length_adjusted": false,
+      "minimum_length_for_settle_eval_m": 64.0,
+      "planner_obstacle_clearance": {
+        "closest_planner_obstacle": "o1_left_of_reference",
+        "closest_test_item": "velocity_4mps_A_B_segment",
+        "conclusion": "SAFE",
+        "min_clearance_m": 29.179247466445055,
+        "per_obstacle": [
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 29.179247466445055,
+            "name": "o1_left_of_reference",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 29.179798156122352,
+            "name": "o2_right_of_reference",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 48.899441198920584,
+            "name": "o3_on_reference",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 64.39972380684236,
+            "name": "o4_on_reference",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 139.9239308163612,
+            "name": "o5_near_island_bank",
+            "shape": "cylinder",
+            "type": "buoy_cylinder"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 81.42108663784502,
+            "name": "w1_wind_channel_cloud",
+            "shape": "box",
+            "type": "static_box"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 90.8914240087174,
+            "name": "w2_wind_channel_cloud",
+            "shape": "box",
+            "type": "static_box"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 101.09969152958594,
+            "name": "w3_wind_channel_cloud",
+            "shape": "box",
+            "type": "static_box"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 111.84304052712875,
+            "name": "w4_wind_channel_cloud",
+            "shape": "box",
+            "type": "static_box"
+          },
+          {
+            "closest_test_item": "velocity_4mps_A_B_segment",
+            "min_clearance_m": 128.31305560471733,
+            "name": "d1_wamv_crossing_obstacle",
+            "shape": "box",
+            "type": "dynamic_obstacle"
+          }
+        ]
+      },
+      "requested_L_m": 90.0,
+      "round_trips": 5,
+      "speed_mps": 4.0,
+      "windows": 10,
+      "z": 10.0
+    }
+  ],
+  "yaw_test": {
+    "base_yaw_rad": 0.469929,
+    "denominator_policy": "first 8 windows use 90 deg; last 2 windows use 180 deg",
+    "targets": [
+      {
+        "denominator_deg": 90,
+        "denominator_rad": 1.5707963267948966,
+        "index": 1,
+        "offset_deg": 90,
+        "target_yaw_rad": 2.0407253267948966,
+        "target_yaw_wrapped_rad": 2.040725326794897
+      },
+      {
+        "denominator_deg": 90,
+        "denominator_rad": 1.5707963267948966,
+        "index": 2,
+        "offset_deg": 180,
+        "target_yaw_rad": 3.611521653589793,
+        "target_yaw_wrapped_rad": -2.6716636535897926
+      },
+      {
+        "denominator_deg": 90,
+        "denominator_rad": 1.5707963267948966,
+        "index": 3,
+        "offset_deg": 270,
+        "target_yaw_rad": 5.182317980384689,
+        "target_yaw_wrapped_rad": -1.1008673267948978
+      },
+      {
+        "denominator_deg": 90,
+        "denominator_rad": 1.5707963267948966,
+        "index": 4,
+        "offset_deg": 360,
+        "target_yaw_rad": 6.753114307179586,
+        "target_yaw_wrapped_rad": 0.4699290000000005
+      },
+      {
+        "denominator_deg": 90,
+        "denominator_rad": 1.5707963267948966,
+        "index": 5,
+        "offset_deg": -90,
+        "target_yaw_rad": -1.1008673267948965,
+        "target_yaw_wrapped_rad": -1.1008673267948965
+      },
+      {
+        "denominator_deg": 90,
+        "denominator_rad": 1.5707963267948966,
+        "index": 6,
+        "offset_deg": -180,
+        "target_yaw_rad": -2.671663653589793,
+        "target_yaw_wrapped_rad": -2.671663653589793
+      },
+      {
+        "denominator_deg": 90,
+        "denominator_rad": 1.5707963267948966,
+        "index": 7,
+        "offset_deg": -270,
+        "target_yaw_rad": -4.24245998038469,
+        "target_yaw_wrapped_rad": 2.040725326794896
+      },
+      {
+        "denominator_deg": 90,
+        "denominator_rad": 1.5707963267948966,
+        "index": 8,
+        "offset_deg": -360,
+        "target_yaw_rad": -5.813256307179587,
+        "target_yaw_wrapped_rad": 0.4699289999999996
+      },
+      {
+        "denominator_deg": 180,
+        "denominator_rad": 3.141592653589793,
+        "index": 9,
+        "offset_deg": 180,
+        "target_yaw_rad": 3.611521653589793,
+        "target_yaw_wrapped_rad": -2.6716636535897926
+      },
+      {
+        "denominator_deg": 180,
+        "denominator_rad": 3.141592653589793,
+        "index": 10,
+        "offset_deg": 0,
+        "target_yaw_rad": 0.469929,
+        "target_yaw_wrapped_rad": 0.46992900000000004
+      }
+    ],
+    "windows": 10
+  }
+}

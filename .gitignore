@@ -1,0 +1,47 @@
+# Runtime outputs
+runs/
+cache/
+logs/
+log/
+bags/
+ulogs/
+*.bag
+*.ulg
+*.mcap
+
+# Catkin / CMake generated files
+build/
+devel/
+install/
+catkin_ws/build/
+catkin_ws/devel/
+catkin_ws/install/
+catkin_ws/logs/
+catkin_ws/log/
+.catkin_tools/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Python / test cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environment overrides
+env.local
+*.local
+*.env
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo

@@ -1,0 +1,438 @@
+{
+  "active_goal_index": 8,
+  "final_hold_seen_sec": 0.2680000000000007,
+  "max_active_goal_index": 8,
+  "metric_3_10": {
+    "description": "P1-P8 sparse waypoint 3D arrival within per-waypoint radius; yaw diagnostic only",
+    "pass_count": 8,
+    "passed": true,
+    "required_count": 8
+  },
+  "metric_3_6": {
+    "description": "P1-P7 nearest 3D waypoint error divided by previous segment length",
+    "max_error_ratio": 0.031868187561951346,
+    "mean_error_ratio": 0.014002291077639924,
+    "pass_count": 7,
+    "passed": true,
+    "point_count": 7
+  },
+  "metric_3_7": {
+    "clearance": {
+      "dynamic_cloud_entry_count": 0,
+      "dynamic_cloud_min_distance_m": null,
+      "dynamic_geometry_entry_count": 0,
+      "dynamic_min_clearance_m": 11.89190792899948,
+      "dynamic_nearest_cloud_label": null,
+      "dynamic_nearest_obstacle": "d1_wamv_crossing_obstacle",
+      "static_cloud_entry_count": 0,
+      "static_cloud_min_distance_m": 0.8141980050644918,
+      "static_geometry_entry_count": 0,
+      "static_min_clearance_m": 0.8086800027841847,
+      "static_nearest_cloud_label": "o4_on_reference",
+      "static_nearest_obstacle": "o4_on_reference"
+    },
+    "cloud_entry_count": 0,
+    "collision": false,
+    "description": "No geometry/cloud entry and P8 final hold completed",
+    "geometry_entry_count": 0,
+    "passed": true,
+    "safe_so_far": true
+  },
+  "metric_3_9": {
+    "description": "P8 final-hold nearest endpoint error divided by P0-P8 route length",
+    "final_error_m": 0.5952538810440474,
+    "final_error_ratio": 0.0019204885330139766,
+    "passed": true
+  },
+  "ok": true,
+  "p8_completed": true,
+  "route": {
+    "segment_lengths_m": [
+      null,
+      46.49950340595048,
+      12.2596101895615,
+      9.800752267045622,
+      12.260802624624544,
+      35.996645399259094,
+      38.42073091444252,
+      81.71135875140004,
+      72.99979469149211
+    ],
+    "total_p0_p8_length_m": 309.9491982437759,
+    "waypoint_count": 9
+  },
+  "run_label": "lidar_lidar_R4_H_r2",
+  "sample_count": 4045,
+  "scene": "${F250_PROJECT_ROOT}/catkin_ws/src/f250_maritime_uav_sim/config/scenes/level_m_gps_assets_quick_complex.yaml",
+  "waypoints": [
+    {
+      "active_nearest_actual_yaw_rad": 0.705624,
+      "active_nearest_distance_m": 1.5542540546136618,
+      "active_nearest_position": [
+        53.800335,
+        15.100123,
+        9.591673
+      ],
+      "active_nearest_time_sec": 29.972,
+      "active_nearest_yaw_error_rad": 0.2356950000000002,
+      "finalize_reason": "active_goal_switch",
+      "finalized": true,
+      "finalized_time_sec": 30.004,
+      "hold_time_sec": 0.2,
+      "index": 0,
+      "label": "P0",
+      "max_duration_sec": 40.0,
+      "metric_3_10_pass": null,
+      "metric_3_6_error_ratio": null,
+      "metric_3_6_pass": null,
+      "metric_3_9_final_error_ratio": null,
+      "name": "p0_h_midair_start",
+      "nearest_actual_yaw_rad": 0.541972,
+      "nearest_distance_m": 0.2510851477726238,
+      "nearest_position": [
+        55.143822,
+        15.805442,
+        9.932872
+      ],
+      "nearest_time_sec": 30.904,
+      "nearest_yaw_error_rad": 0.07204299999999986,
+      "position": [
+        55.0,
+        16.0,
+        10.0
+      ],
+      "radius_m": 4.0,
+      "reached": true,
+      "status": "passed",
+      "yaw_rad": 0.469929
+    },
+    {
+      "active_nearest_actual_yaw_rad": 0.729663,
+      "active_nearest_distance_m": 1.1384542875416654,
+      "active_nearest_position": [
+        95.607101,
+        36.301285,
+        10.027414
+      ],
+      "active_nearest_time_sec": 46.972,
+      "active_nearest_yaw_error_rad": 0.1656629999999999,
+      "finalize_reason": "active_goal_switch",
+      "finalized": true,
+      "finalized_time_sec": 47.004,
+      "hold_time_sec": 0.2,
+      "index": 1,
+      "label": "P1",
+      "max_duration_sec": 45.0,
+      "metric_3_10_pass": true,
+      "metric_3_6_error_ratio": 0.0016110109902924001,
+      "metric_3_6_pass": true,
+      "metric_3_9_final_error_ratio": null,
+      "name": "p1_o3_reference_behind",
+      "nearest_actual_yaw_rad": 0.927806,
+      "nearest_distance_m": 0.07491121103012512,
+      "nearest_position": [
+        96.478851,
+        37.023804,
+        10.064661
+      ],
+      "nearest_time_sec": 47.772,
+      "nearest_yaw_error_rad": 0.3638060000000003,
+      "position": [
+        96.459,
+        37.056,
+        10.0
+      ],
+      "radius_m": 5.5,
+      "reached": true,
+      "status": "passed",
+      "yaw_rad": 0.564
+    },
+    {
+      "active_nearest_actual_yaw_rad": 0.796043,
+      "active_nearest_distance_m": 2.084892746608803,
+      "active_nearest_position": [
+        100.02697,
+        46.716251,
+        10.037719
+      ],
+      "active_nearest_time_sec": 51.972,
+      "active_nearest_yaw_error_rad": -0.05789,
+      "finalize_reason": "active_goal_switch",
+      "finalized": true,
+      "finalized_time_sec": 52.004,
+      "hold_time_sec": 0.2,
+      "index": 2,
+      "label": "P2",
+      "max_duration_sec": 45.0,
+      "metric_3_10_pass": true,
+      "metric_3_6_error_ratio": 0.019898359354518478,
+      "metric_3_6_pass": true,
+      "metric_3_9_final_error_ratio": null,
+      "name": "p2_o3_front_offset",
+      "nearest_actual_yaw_rad": 0.40348,
+      "nearest_distance_m": 0.24394612909821112,
+      "nearest_position": [
+        101.458374,
+        48.039501,
+        10.079255
+      ],
+      "nearest_time_sec": 53.072,
+      "nearest_yaw_error_rad": -0.450453,
+      "position": [
+        101.42,
+        48.267,
+        10.0
+      ],
+      "radius_m": 5.5,
+      "reached": true,
+      "status": "passed",
+      "yaw_rad": 0.853933
+    },
+    {
+      "active_nearest_actual_yaw_rad": -0.651707,
+      "active_nearest_distance_m": 2.6376440787520905,
+      "active_nearest_position": [
+        108.249008,
+        45.758724,
+        10.037044
+      ],
+      "active_nearest_time_sec": 55.972,
+      "active_nearest_yaw_error_rad": -0.4586459999999999,
+      "finalize_reason": "active_goal_switch",
+      "finalized": true,
+      "finalized_time_sec": 56.004,
+      "hold_time_sec": 0.2,
+      "index": 3,
+      "label": "P3",
+      "max_duration_sec": 45.0,
+      "metric_3_10_pass": true,
+      "metric_3_6_error_ratio": 0.031868187561951346,
+      "metric_3_6_pass": true,
+      "metric_3_9_final_error_ratio": null,
+      "name": "p3_o4_reference_behind_mirror",
+      "nearest_actual_yaw_rad": -0.386886,
+      "nearest_distance_m": 0.31233221149442975,
+      "nearest_position": [
+        110.428719,
+        44.329624,
+        10.1015
+      ],
+      "nearest_time_sec": 57.272,
+      "nearest_yaw_error_rad": -0.19382499999999991,
+      "position": [
+        110.279,
+        44.075,
+        10.0
+      ],
+      "radius_m": 5.5,
+      "reached": true,
+      "status": "passed",
+      "yaw_rad": -0.193061
+    },
+    {
+      "active_nearest_actual_yaw_rad": -0.45041,
+      "active_nearest_distance_m": 2.421108147734214,
+      "active_nearest_position": [
+        119.924965,
+        42.109238,
+        10.017034
+      ],
+      "active_nearest_time_sec": 60.972,
+      "active_nearest_yaw_error_rad": -0.5108380000000001,
+      "finalize_reason": "active_goal_switch",
+      "finalized": true,
+      "finalized_time_sec": 61.004,
+      "hold_time_sec": 0.2,
+      "index": 4,
+      "label": "P4",
+      "max_duration_sec": 45.0,
+      "metric_3_10_pass": true,
+      "metric_3_6_error_ratio": 0.027745858137448128,
+      "metric_3_6_pass": true,
+      "metric_3_9_final_error_ratio": null,
+      "name": "p4_o4_front_offset_mirror",
+      "nearest_actual_yaw_rad": -0.125622,
+      "nearest_distance_m": 0.34018649027408426,
+      "nearest_position": [
+        122.261345,
+        41.798828,
+        10.070334
+      ],
+      "nearest_time_sec": 62.104,
+      "nearest_yaw_error_rad": -0.18604999999999983,
+      "position": [
+        122.259,
+        41.466,
+        10.0
+      ],
+      "radius_m": 5.5,
+      "reached": true,
+      "status": "passed",
+      "yaw_rad": 0.060428
+    },
+    {
+      "active_nearest_actual_yaw_rad": 0.633967,
+      "active_nearest_distance_m": 1.7529298744564883,
+      "active_nearest_position": [
+        155.266357,
+        50.861897,
+        10.041448
+      ],
+      "active_nearest_time_sec": 73.972,
+      "active_nearest_yaw_error_rad": 1.2041789999999999,
+      "finalize_reason": "active_goal_switch",
+      "finalized": true,
+      "finalized_time_sec": 74.008,
+      "hold_time_sec": 0.2,
+      "index": 5,
+      "label": "P5",
+      "max_duration_sec": 50.0,
+      "metric_3_10_pass": true,
+      "metric_3_6_error_ratio": 0.012725636804152533,
+      "metric_3_6_pass": true,
+      "metric_3_9_final_error_ratio": null,
+      "name": "p5_white_wind_channel_w1_station",
+      "nearest_actual_yaw_rad": 0.42961,
+      "nearest_distance_m": 0.4580802355188395,
+      "nearest_position": [
+        156.808533,
+        51.371422,
+        10.0707
+      ],
+      "nearest_time_sec": 74.904,
+      "nearest_yaw_error_rad": 0.999822,
+      "position": [
+        156.735,
+        51.818,
+        10.0
+      ],
+      "radius_m": 6.0,
+      "reached": true,
+      "status": "passed",
+      "yaw_rad": -0.570212
+    },
+    {
+      "active_nearest_actual_yaw_rad": -0.732689,
+      "active_nearest_distance_m": 1.3767453541762866,
+      "active_nearest_position": [
+        188.031586,
+        31.973209,
+        10.033737
+      ],
+      "active_nearest_time_sec": 87.972,
+      "active_nearest_yaw_error_rad": -0.16247699999999998,
+      "finalize_reason": "active_goal_switch",
+      "finalized": true,
+      "finalized_time_sec": 88.004,
+      "hold_time_sec": 0.2,
+      "index": 6,
+      "label": "P6",
+      "max_duration_sec": 50.0,
+      "metric_3_10_pass": true,
+      "metric_3_6_error_ratio": 0.002358900891490563,
+      "metric_3_6_pass": true,
+      "metric_3_9_final_error_ratio": null,
+      "name": "p6_white_wind_channel_w4_station",
+      "nearest_actual_yaw_rad": -1.029769,
+      "nearest_distance_m": 0.0906306964057975,
+      "nearest_position": [
+        189.064987,
+        31.062761,
+        10.088529
+      ],
+      "nearest_time_sec": 88.872,
+      "nearest_yaw_error_rad": -0.45955699999999977,
+      "position": [
+        189.077,
+        31.078,
+        10.0
+      ],
+      "radius_m": 6.0,
+      "reached": true,
+      "status": "passed",
+      "yaw_rad": -0.570212
+    },
+    {
+      "active_nearest_actual_yaw_rad": -1.205149,
+      "active_nearest_distance_m": 2.185024736657,
+      "active_nearest_position": [
+        196.369873,
+        -48.129475,
+        10.070007
+      ],
+      "active_nearest_time_sec": 115.968,
+      "active_nearest_yaw_error_rad": -0.2375799999999999,
+      "finalize_reason": "active_goal_switch",
+      "finalized": true,
+      "finalized_time_sec": 116.004,
+      "hold_time_sec": 0.2,
+      "index": 7,
+      "label": "P7",
+      "max_duration_sec": 45.0,
+      "metric_3_10_pass": true,
+      "metric_3_6_error_ratio": 0.0018080838036260193,
+      "metric_3_6_pass": true,
+      "metric_3_9_final_error_ratio": null,
+      "name": "p7_red_bridge_center_normal",
+      "nearest_actual_yaw_rad": -0.923816,
+      "nearest_distance_m": 0.1477409843306816,
+      "nearest_position": [
+        196.725739,
+        -50.286507,
+        10.105409
+      ],
+      "nearest_time_sec": 117.068,
+      "nearest_yaw_error_rad": 0.04375300000000015,
+      "position": [
+        196.827,
+        -50.265,
+        10.0
+      ],
+      "radius_m": 5.5,
+      "reached": true,
+      "status": "passed",
+      "yaw_rad": -0.967569
+    },
+    {
+      "active_nearest_actual_yaw_rad": -0.810662,
+      "active_nearest_distance_m": 0.5952538810440474,
+      "active_nearest_position": [
+        237.792267,
+        -109.990128,
+        10.032885
+      ],
+      "active_nearest_time_sec": 142.204,
+      "active_nearest_yaw_error_rad": 0.1569069999999999,
+      "finalize_reason": "final_hold_reached",
+      "finalized": true,
+      "finalized_time_sec": 142.168,
+      "hold_time_sec": 0.2,
+      "index": 8,
+      "label": "P8",
+      "max_duration_sec": 45.0,
+      "metric_3_10_pass": true,
+      "metric_3_6_error_ratio": null,
+      "metric_3_6_pass": null,
+      "metric_3_9_final_error_ratio": 0.0019204885330139766,
+      "name": "p8_cargo_one_meter_finish",
+      "nearest_actual_yaw_rad": -0.810662,
+      "nearest_distance_m": 0.5952538810440474,
+      "nearest_position": [
+        237.792267,
+        -109.990128,
+        10.032885
+      ],
+      "nearest_time_sec": 142.204,
+      "nearest_yaw_error_rad": 0.1569069999999999,
+      "position": [
+        238.24,
+        -110.381,
+        10.0
+      ],
+      "radius_m": 1.0,
+      "reached": true,
+      "status": "current",
+      "yaw_rad": -0.967569
+    }
+  ]
+}

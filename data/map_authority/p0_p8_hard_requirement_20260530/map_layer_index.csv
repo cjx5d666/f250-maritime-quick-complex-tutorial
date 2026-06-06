@@ -1,0 +1,4 @@
+file,role,has_axes,has_title,has_legend,visual_mesh_csv,planner_obstacle_csv,waypoint_csv,include_wind_boxes,notes
+01_clean_visual_base.png,01_clean_visual_base,True,False,False,visual_mesh_footprints.csv,,,False,Clean visual base only; no planner obstacles or route points.
+02_visual_planner_obstacles.png,02_visual_plus_planner_obstacles,True,True,True,visual_mesh_footprints.csv,planner_obstacles.csv,,True,Visual base plus planner-visible obstacle footprints; no route points.
+03_visual_planner_route_p0_p8.png,03_visual_planner_route_p0_p8,True,True,True,visual_mesh_footprints.csv,planner_obstacles.csv,route_waypoints.csv,True,Current P0-P8 route review on authoritative geometry.

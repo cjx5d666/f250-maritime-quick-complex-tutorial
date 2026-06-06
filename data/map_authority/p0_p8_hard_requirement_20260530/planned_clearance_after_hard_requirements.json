@@ -1,0 +1,134 @@
+{
+  "acceptance": {
+    "min_dynamic_obstacle_distance_m": 3.0,
+    "min_obstacle_distance_m": 1.5
+  },
+  "dynamic_mode": "auto",
+  "failure_reasons": [
+    "planned_polyline static clearance 0.378 m below 1.500 m"
+  ],
+  "metrics": {
+    "planned_polyline": {
+      "dynamic": {
+        "cloud_entry_count": 0,
+        "first_cloud_entry": null,
+        "first_geometry_entry": null,
+        "geometry_entry_count": 0,
+        "min_clearance_m": 3.2236337777410444,
+        "min_cloud_distance_m": null,
+        "nearest_cloud_label": null,
+        "nearest_cloud_sample": null,
+        "nearest_dynamic_time_sec": 8.761904761904763,
+        "nearest_obstacle": "d1_wamv_crossing_obstacle",
+        "nearest_source_key": "dynamic_obstacles",
+        "sample": {
+          "index": 897,
+          "kind": "polyline",
+          "label": "segment_6",
+          "point": [
+            195.5472,
+            -36.8322,
+            10.0
+          ],
+          "segment_index": 6,
+          "segment_u": 0.8349
+        }
+      },
+      "name": "planned_polyline",
+      "sample_count": 1244,
+      "static": {
+        "cloud_entry_count": 0,
+        "first_cloud_entry": null,
+        "first_geometry_entry": null,
+        "geometry_entry_count": 0,
+        "min_clearance_m": 0.37775256215849407,
+        "min_cloud_distance_m": null,
+        "nearest_cloud_label": null,
+        "nearest_cloud_sample": null,
+        "nearest_obstacle": "o4_on_reference",
+        "nearest_source_key": "buoys",
+        "sample": {
+          "index": 293,
+          "kind": "polyline",
+          "label": "segment_3",
+          "point": [
+            114.3522,
+            43.1879,
+            10.0
+          ],
+          "segment_index": 3,
+          "segment_u": 0.34
+        }
+      }
+    },
+    "planned_waypoints": {
+      "dynamic": {
+        "cloud_entry_count": 0,
+        "first_cloud_entry": null,
+        "first_geometry_entry": null,
+        "geometry_entry_count": 0,
+        "min_clearance_m": 11.831985525677789,
+        "min_cloud_distance_m": null,
+        "nearest_cloud_label": null,
+        "nearest_cloud_sample": null,
+        "nearest_dynamic_time_sec": 8.761904761904763,
+        "nearest_obstacle": "d1_wamv_crossing_obstacle",
+        "nearest_source_key": "dynamic_obstacles",
+        "sample": {
+          "index": 7,
+          "kind": "waypoint",
+          "label": "p7_red_bridge_center_normal",
+          "point": [
+            196.827,
+            -50.265,
+            10.0
+          ]
+        }
+      },
+      "name": "planned_waypoints",
+      "sample_count": 9,
+      "static": {
+        "cloud_entry_count": 0,
+        "first_cloud_entry": null,
+        "first_geometry_entry": null,
+        "geometry_entry_count": 0,
+        "min_clearance_m": 2.399937817830305,
+        "min_cloud_distance_m": null,
+        "nearest_cloud_label": null,
+        "nearest_cloud_sample": null,
+        "nearest_obstacle": "o3_on_reference",
+        "nearest_source_key": "buoys",
+        "sample": {
+          "index": 1,
+          "kind": "waypoint",
+          "label": "p1_o3_reference_behind",
+          "point": [
+            96.459,
+            37.056,
+            10.0
+          ]
+        }
+      }
+    }
+  },
+  "ok": false,
+  "planner_visible": {
+    "dynamic_obstacles": 1,
+    "dynamic_sample_times": 64,
+    "static_cloud_points": 0,
+    "static_geometry_obstacles": 9
+  },
+  "scene": "${F250_PROJECT_ROOT}/catkin_ws/src/f250_maritime_uav_sim/config/scenes/level_m_gps_assets_quick_complex.yaml",
+  "thresholds": {
+    "actual_filter": "armed_offboard",
+    "cloud_entry_radius_m": 0.125,
+    "cloud_search_radius_m": 3.0,
+    "dynamic_horizon_sec": 46.0,
+    "dynamic_samples": 64,
+    "include_cloud_distance": false,
+    "min_dynamic_obstacle_distance_m": 3.0,
+    "min_obstacle_distance_m": 1.5,
+    "sample_spacing_m": 0.25
+  },
+  "trajectory_csv": null
+}

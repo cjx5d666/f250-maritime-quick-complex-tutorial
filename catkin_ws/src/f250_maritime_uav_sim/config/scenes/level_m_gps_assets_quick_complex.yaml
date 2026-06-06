@@ -1,0 +1,565 @@
+scene_level: level_m_gps_assets_quick_complex
+world_name: maritime_level_m_gps_assets_quick_complex
+frame_id: world
+water_level_m: 0.0
+cloud_resolution: 0.25
+cloud_publish_rate_hz: 5.0
+gui_camera:
+  pose:
+  - 165.0
+  - -6.0
+  - 470.0
+  - 0.0
+  - 1.34
+  - 0.0
+geo_origin:
+  latitude_deg: 22.3
+  longitude_deg: 114.18
+  altitude_m: 0.0
+  local_position:
+  - 0.0
+  - 0.0
+  - 0.0
+deck:
+  name: cruise_ship_hidden_support_deck
+  center:
+  - 30.5
+  - 16.0
+  - 4.54
+  size:
+  - 64.0
+  - 12.5
+  - 0.24
+  visual: false
+  include_in_cloud: false
+takeoff_deck_zone:
+  name: cruise_ship_bow_h_pad_zone
+  center:
+  - 55.0
+  - 16.0
+  - 4.685
+  size:
+  - 4.8
+  - 3.0
+  - 0.12
+  yaw: 0.0
+  visual: false
+  include_in_cloud: false
+  allow_outboard: true
+landing_box:
+  name: cruise_ship_bow_h_pad_zone
+  center:
+  - 55.0
+  - 16.0
+  - 4.685
+  size:
+  - 4.8
+  - 3.0
+  - 0.12
+  yaw: 0.0
+  visual: false
+  include_in_cloud: false
+  allow_outboard: true
+landing_deck_zone:
+  name: cruise_ship_bow_h_pad_zone
+  center:
+  - 55.0
+  - 16.0
+  - 4.685
+  size:
+  - 4.8
+  - 3.0
+  - 0.12
+  yaw: 0.0
+  visual: false
+  include_in_cloud: false
+  allow_outboard: true
+ship_hull: []
+docks: []
+visual_vessels:
+- name: oasis_of_the_seas_static_carrier
+  center:
+  - 26.5
+  - 16.0
+  - -1.75
+  rpy:
+  - 0
+  - 0
+  - 0
+  scale: 1.2
+  static: true
+  collision: false
+  mesh_uri: model://f250_oasis_of_the_seas_visual/meshes/oasis_of_the_seas_materialized.obj
+- name: tanker_ship_static_visual
+  center:
+  - 237.435
+  - -109.212
+  - -0.55
+  rpy:
+  - 0
+  - 0
+  - -0.22
+  scale: 1.7
+  static: true
+  collision: false
+  mesh_uri: model://f250_tanker_ship_visual/meshes/tanker_ship_materialized.obj
+- name: kauai_left_island_visual
+  center:
+  - 135.0
+  - -105.0
+  - -1.15
+  rpy:
+  - 0
+  - 0
+  - -0.18
+  scale:
+  - 1
+  - 1
+  - 1
+  static: true
+  collision: false
+  mesh_uri: model://f250_clean_mountain_probe_visual/meshes/clean_single_mountain_probe_detailed.obj
+- name: kauai_center_island_visual
+  center:
+  - 270.0
+  - -12.0
+  - -1.15
+  rpy:
+  - 0
+  - 0
+  - 0.02
+  scale:
+  - 1
+  - 1
+  - 1
+  static: true
+  collision: false
+  mesh_uri: model://f250_clean_mountain_probe_visual/meshes/clean_single_mountain_probe_detailed.obj
+- name: kauai_right_island_visual
+  center:
+  - 135.0
+  - 105.0
+  - -1.15
+  rpy:
+  - 0
+  - 0
+  - 0.18
+  scale:
+  - 1
+  - 1
+  - 1
+  static: true
+  collision: false
+  mesh_uri: model://f250_clean_mountain_probe_visual/meshes/clean_single_mountain_probe_detailed.obj
+- name: golden_gate_bridge_visual
+  center:
+  - 202.5
+  - -58.5
+  - 0.0
+  rpy:
+  - 0
+  - 0
+  - 0.6032298529246849
+  scale: 5.85
+  static: true
+  collision: false
+  mesh_uri: model://f250_golden_gate_bridge_matthew_zirkle_visual/meshes/golden_gate_bridge_matthew_zirkle_materialized.obj
+- name: helix_bridge_visual
+  center:
+  - 202.5
+  - 46.5
+  - 0.0
+  rpy:
+  - 0
+  - 0
+  - 2.427501954977635
+  scale: 8.9
+  static: true
+  collision: false
+  mesh_uri: model://f250_helix_bridge_visual/meshes/helix_bridge_materialized.obj
+  mesh_material:
+  - 0.86
+  - 0.92
+  - 0.96
+  - 1.0
+- name: lifebuoy_low_poly_visual
+  center:
+  - -14.0
+  - -33.5
+  - 0.08
+  rpy:
+  - 0
+  - 0
+  - 0.25
+  scale: 1.1
+  static: true
+  collision: false
+  mesh_uri: model://f250_lifebuoy_low_poly_visual/meshes/lifebuoy_low_poly_materialized.obj
+- name: task_wind_channel_1
+  mesh_uri: model://f250_generic_wind_turbine_visual/meshes/generic_wind_turbine_materialized.obj
+  center:
+  - 145.816
+  - 34.791
+  - 0.0
+  rpy:
+  - 0.0
+  - 0.0
+  - -0.5702118602218398
+  scale: 1.85
+  static: true
+  collision: false
+- name: task_wind_channel_2
+  mesh_uri: model://f250_generic_wind_turbine_visual/meshes/generic_wind_turbine_materialized.obj
+  center:
+  - 156.597
+  - 27.878
+  - 0.0
+  rpy:
+  - 0.0
+  - 0.0
+  - -0.5702118602218398
+  scale: 1.85
+  static: true
+  collision: false
+- name: task_wind_channel_3
+  mesh_uri: model://f250_generic_wind_turbine_visual/meshes/generic_wind_turbine_materialized.obj
+  center:
+  - 167.378
+  - 20.965
+  - 0.0
+  rpy:
+  - 0.0
+  - 0.0
+  - -0.5702118602218398
+  scale: 1.85
+  static: true
+  collision: false
+- name: task_wind_channel_4
+  mesh_uri: model://f250_generic_wind_turbine_visual/meshes/generic_wind_turbine_materialized.obj
+  center:
+  - 178.158
+  - 14.051
+  - 0.0
+  rpy:
+  - 0.0
+  - 0.0
+  - -0.5702118602218398
+  scale: 1.85
+  static: true
+  collision: false
+bridges: []
+bridge_piers: []
+buoys:
+- name: o1_left_of_reference
+  center:
+  - 78.564
+  - 38.061
+  - 5.5
+  radius: 3.1
+  height: 11.0
+  visual_style: nav_marker
+  visual: true
+  include_in_cloud: true
+  color:
+  - 1.0
+  - 0.74
+  - 0.18
+  - 1.0
+  stripe_color:
+  - 0.96
+  - 0.96
+  - 0.9
+  - 1.0
+- name: o2_right_of_reference
+  center:
+  - 86.715
+  - 22.012
+  - 5.5
+  radius: 3.1
+  height: 11.0
+  visual_style: nav_marker
+  visual: true
+  include_in_cloud: true
+  color:
+  - 1.0
+  - 0.74
+  - 0.18
+  - 1.0
+  stripe_color:
+  - 0.96
+  - 0.96
+  - 0.9
+  - 1.0
+- name: o3_on_reference
+  center:
+  - 101.363
+  - 39.546
+  - 5.5
+  radius: 3.1
+  height: 11.0
+  visual_style: nav_marker
+  visual: true
+  include_in_cloud: true
+  color:
+  - 0.95
+  - 0.62
+  - 0.16
+  - 1.0
+  stripe_color:
+  - 0.96
+  - 0.96
+  - 0.9
+  - 1.0
+- name: o4_on_reference
+  center:
+  - 115.183
+  - 46.565
+  - 5.5
+  radius: 3.1
+  height: 11.0
+  visual_style: nav_marker
+  visual: true
+  include_in_cloud: true
+  color:
+  - 0.95
+  - 0.62
+  - 0.16
+  - 1.0
+  stripe_color:
+  - 0.96
+  - 0.96
+  - 0.9
+  - 1.0
+- name: o5_near_island_bank
+  center:
+  - 197.5
+  - 5.0
+  - 5.5
+  radius: 3.0
+  height: 11.0
+  visual_style: nav_marker
+  visual: true
+  include_in_cloud: true
+  color:
+  - 1.0
+  - 0.5
+  - 0.12
+  - 1.0
+  stripe_color:
+  - 0.96
+  - 0.96
+  - 0.9
+  - 1.0
+box_obstacles:
+- name: w1_wind_channel_cloud
+  center:
+  - 145.816
+  - 34.791
+  - 9.0
+  size:
+  - 18.0
+  - 14.0
+  - 22.0
+  yaw: -0.5702118602218398
+  visual: false
+  include_in_cloud: true
+  color:
+  - 0.72
+  - 0.74
+  - 0.68
+  - 0.86
+- name: w2_wind_channel_cloud
+  center:
+  - 156.597
+  - 27.878
+  - 9.0
+  size:
+  - 18.0
+  - 14.0
+  - 22.0
+  yaw: -0.5702118602218398
+  visual: false
+  include_in_cloud: true
+  color:
+  - 0.72
+  - 0.74
+  - 0.68
+  - 0.86
+- name: w3_wind_channel_cloud
+  center:
+  - 167.378
+  - 20.965
+  - 9.0
+  size:
+  - 18.0
+  - 14.0
+  - 22.0
+  yaw: -0.5702118602218398
+  visual: false
+  include_in_cloud: true
+  color:
+  - 0.72
+  - 0.74
+  - 0.68
+  - 0.86
+- name: w4_wind_channel_cloud
+  center:
+  - 178.158
+  - 14.051
+  - 9.0
+  size:
+  - 18.0
+  - 14.0
+  - 22.0
+  yaw: -0.5702118602218398
+  visual: false
+  include_in_cloud: true
+  color:
+  - 0.72
+  - 0.74
+  - 0.68
+  - 0.86
+visual_boxes: []
+dynamic_obstacles:
+- name: d1_wamv_crossing_obstacle
+  shape: box
+  center:
+  - 181.0
+  - -40.0
+  - 6.5
+  size:
+  - 4.8
+  - 2.4
+  - 12.0
+  yaw: -0.25
+  include_in_cloud: true
+  mesh_uri: model://f250_wamv_visual/mesh/WAM-V-Base.dae
+  mesh_scale: 0.75
+  mesh_pose:
+  - 0.0
+  - 0.0
+  - -6.1
+  - 0.0
+  - 0.0
+  - 0.0
+  motion:
+    type: sinusoid
+    axis_vector:
+    - 1.0
+    - 0.25
+    - 0.0
+    amplitude: 9.0
+    period_sec: 46.0
+    phase_rad: 0.4
+    yaw_mode: track
+  color:
+  - 0.22
+  - 0.58
+  - 0.72
+  - 1.0
+waypoints:
+- name: p0_h_midair_start
+  position:
+  - 55.0
+  - 16.0
+  - 10.0
+  yaw: 0.469929
+  radius: 4.0
+  hold_time: 0.2
+  max_duration_sec: 40.0
+- name: p1_o3_reference_behind
+  position:
+  - 96.459
+  - 37.056
+  - 10.0
+  yaw: 0.564
+  radius: 5.5
+  hold_time: 0.2
+  max_duration_sec: 45.0
+- name: p2_o3_front_offset
+  position:
+  - 101.42
+  - 48.267
+  - 10.0
+  yaw: 0.853933
+  radius: 5.5
+  hold_time: 0.2
+  max_duration_sec: 45.0
+- name: p3_o4_reference_behind_mirror
+  position:
+  - 110.279
+  - 44.075
+  - 10.0
+  yaw: -0.193061
+  radius: 5.5
+  hold_time: 0.2
+  max_duration_sec: 45.0
+- name: p4_o4_front_offset_mirror
+  position:
+  - 122.259
+  - 41.466
+  - 10.0
+  yaw: 0.060428
+  radius: 5.5
+  hold_time: 0.2
+  max_duration_sec: 45.0
+- name: p5_white_wind_channel_w1_station
+  position:
+  - 156.735
+  - 51.818
+  - 10.0
+  yaw: -0.570212
+  radius: 6.0
+  hold_time: 0.2
+  max_duration_sec: 50.0
+- name: p6_white_wind_channel_w4_station
+  position:
+  - 189.077
+  - 31.078
+  - 10.0
+  yaw: -0.570212
+  radius: 6.0
+  hold_time: 0.2
+  max_duration_sec: 50.0
+- name: p7_red_bridge_center_normal
+  position:
+  - 196.827
+  - -50.265
+  - 10.0
+  yaw: -0.967569
+  radius: 5.5
+  hold_time: 0.2
+  max_duration_sec: 45.0
+- name: p8_cargo_one_meter_finish
+  position:
+  - 238.24
+  - -110.381
+  - 10.0
+  yaw: -0.967569
+  radius: 1.0
+  hold_time: 0.2
+  max_duration_sec: 45.0
+acceptance:
+  final_zone_source: waypoint
+  position_tolerance_m: 1.0
+  yaw_tolerance_rad: 0.8
+  min_cloud_points: 600
+  max_cloud_points: 500000
+  odom_timeout_sec: 8.0
+  pos_cmd_timeout_sec: 8.0
+  goal_publish_period_sec: 1.0
+  min_water_clearance_m: 3.0
+  min_obstacle_distance_m: 1.5
+  min_dynamic_obstacle_distance_m: 3.0
+  final_zone_hold_sec: 0.2
+  require_all_waypoints: true
+tc_case:
+  id: quick-complex-reset-20260528
+  label: 'quick complex reset: sparse mid-flight obstacle route'
+  route_note: 'Tight hard-requirement geometry pass: H/O3/O4 define the reference
+    line; P1/P3 lie on it at equal behind-distance; P2/P4 are mirrored near-tangent
+    ahead/offset points close to O3/O4; white-bridge midspan mesh tangent defines
+    the parallel direction; W1-W4 and P5/P6 follow that tangent; P5/P6 sit on the
+    narrowed centered corridor line with projections matching W1/W4; wind cloud boxes
+    are hidden on normal review maps but retained for clearance checks; P7/P8 remain
+    on the red-bridge normal and P8 lies on S2.'

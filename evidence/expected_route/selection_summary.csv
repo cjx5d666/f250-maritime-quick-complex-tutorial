@@ -1,0 +1,7 @@
+"id","status","repeats","duration_mean_sec","duration_values_sec","worst_static_min_m","note"
+"R4_H","selected","3","113.7723333333","113.361;113.709;114.247","0.7741187792","current default"
+"R4_L","not_retained_near_tie_lower_clearance","3","113.6426666667","113.357;113.564;114.007","0.287313976","near same speed, worse clearance"
+"R4_K","rejected_static_gate","3","","108.732;119.683;108.600_failed","0.017759956","one repeat entered static cloud gate"
+"R4_N","single_run_probe_only","1","108.453","108.453","0.2684110843","not enough repeats for default"
+"R2_B","previous_reference_recorded_only","2","147.088","147.267;146.909","2.0385507286","raw package pruned"
+"V2_S1","older_reference_recorded_only","2","164.052","163.888;164.216","2.2206079975","raw package pruned"
