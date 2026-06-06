@@ -1,0 +1,160 @@
+{
+  "clearance": null,
+  "clearance_failure_reasons": [],
+  "clouds": {
+    "lidar_scan_topic": "/maritime/lidar_scan",
+    "max_lidar_scan_ranges": 720,
+    "max_planner_cloud_points": 369,
+    "max_raw_cloud_points": 369,
+    "planner_cloud_topic": "/maritime/obstacles_cloud",
+    "raw_cloud_topic": "/maritime/lidar_points"
+  },
+  "counts": {
+    "active_goal": 144,
+    "landing_status": 0,
+    "lidar_scan": 1428,
+    "odom": 4268,
+    "planner_cloud": 1422,
+    "pos_cmd": 14175,
+    "raw_cloud": 1422,
+    "state": 143
+  },
+  "duration_observed_sec": 144.28516244888306,
+  "duration_requested_sec": 255.0,
+  "errors": [],
+  "landing": {
+    "disarm_success_seen": false,
+    "goaround_reasons": [],
+    "goaround_seen": false,
+    "last_status": null,
+    "require_disarmed": false,
+    "required": false,
+    "states_seen": [],
+    "status_messages": 0,
+    "touchdown_seen": false
+  },
+  "metrics": {
+    "best_along_track_m": 309.03387528186175,
+    "cross_track_samples": 4094,
+    "last_active_goal_distance_m": 0.553942047520878,
+    "max_altitude_m": 10.559978485107422,
+    "max_cross_track_allowed_m": 80.0,
+    "max_cross_track_m": 34.73275660310812,
+    "max_stall_allowed_sec": 60.0,
+    "max_stall_seen_sec": 11.668729543685913,
+    "min_active_goal_distance_m": 0.49961474315147125,
+    "min_altitude_armed_m": 4.5067925453186035
+  },
+  "ok": true,
+  "output_csv": "${F250_PROJECT_ROOT}/evidence/expected_route/runs/lidar_lidar_R4_H_r3/actual_trajectory.csv",
+  "route": {
+    "active_goal_advancements": [
+      {
+        "index": 0,
+        "name": "p0_h_midair_start",
+        "position": [
+          55.0,
+          16.0,
+          10.0
+        ],
+        "wall_time": 0.052783966064453125
+      },
+      {
+        "index": 1,
+        "name": "p1_o3_reference_behind",
+        "position": [
+          96.459,
+          37.056,
+          10.0
+        ],
+        "wall_time": 31.685392141342163
+      },
+      {
+        "index": 2,
+        "name": "p2_o3_front_offset",
+        "position": [
+          101.42,
+          48.267,
+          10.0
+        ],
+        "wall_time": 48.743940353393555
+      },
+      {
+        "index": 3,
+        "name": "p3_o4_reference_behind_mirror",
+        "position": [
+          110.279,
+          44.075,
+          10.0
+        ],
+        "wall_time": 53.76430869102478
+      },
+      {
+        "index": 4,
+        "name": "p4_o4_front_offset_mirror",
+        "position": [
+          122.259,
+          41.466,
+          10.0
+        ],
+        "wall_time": 57.774680376052856
+      },
+      {
+        "index": 5,
+        "name": "p5_white_wind_channel_w1_station",
+        "position": [
+          156.735,
+          51.818,
+          10.0
+        ],
+        "wall_time": 62.785640239715576
+      },
+      {
+        "index": 6,
+        "name": "p6_white_wind_channel_w4_station",
+        "position": [
+          189.077,
+          31.078,
+          10.0
+        ],
+        "wall_time": 75.8303894996643
+      },
+      {
+        "index": 7,
+        "name": "p7_red_bridge_center_normal",
+        "position": [
+          196.827,
+          -50.265,
+          10.0
+        ],
+        "wall_time": 89.87723398208618
+      },
+      {
+        "index": 8,
+        "name": "p8_cargo_one_meter_finish",
+        "position": [
+          238.24,
+          -110.381,
+          10.0
+        ],
+        "wall_time": 117.96824216842651
+      }
+    ],
+    "final_hold_required_sec": 0.2,
+    "final_hold_seen_sec": 0.29818081855773926,
+    "final_reached_ever": true,
+    "max_active_goal_index": 8,
+    "waypoint_count": 9
+  },
+  "scene": "${F250_PROJECT_ROOT}/catkin_ws/src/f250_maritime_uav_sim/config/scenes/level_m_gps_assets_quick_complex.yaml",
+  "state": {
+    "armed": true,
+    "connected": true,
+    "mode": "OFFBOARD",
+    "seen_armed": true,
+    "seen_disarmed_after_armed": false,
+    "seen_offboard": true
+  },
+  "stop_reason": "final_hold_reached"
+}
+
