@@ -1,47 +1,70 @@
-# F250 Quick-Complex Maritime Tutorial
+# F250 海上复杂场景避障复现实验教程
 
-This package is a portable tutorial bundle for replaying the F250
-quick-complex maritime P0-P8 route and the independent FC Metric 3.10
-steady-state check on a compatible Linux PX4/ROS system. It contains the ROS
-package subset, PX4 overlay files, authoritative map inputs, retained expected
-evidence, and a static package checker.
+本仓库提供一个可复现的 F250 无人机海上复杂场景避障教程包。教程目标是让同学在已经配置好 PX4 / ROS / Gazebo / EGO-Planner 的 Linux 环境中，复现固定的 P0-P8 航线任务、生成规划航线与实际飞行轨迹对比图，并查看独立的 FC 指标 3.10 结果。
 
-The route geometry, static obstacles, and map authority are fixed to the
-2026-05-30 P0-P8 hard-requirement package. PNG files are review artifacts only;
-CSV, JSON, YAML, and SDF inputs are the source of truth.
+> 注意：本仓库不是虚拟机镜像，也不包含完整 PX4、ROS、Gazebo 或 EGO-Planner 安装包。它提供的是复现实验所需的脚本、F250 模型覆盖文件、地图/场景配置、权威航点与保留验证证据。
 
-## Package Contents Checklist
+## 仓库文件
 
-- ROS package: `catkin_ws/src/f250_maritime_uav_sim`
-- PX4 overlay: `px4_overlay/ROMFS/.../10020_gazebo-classic_f250` and
-  `px4_overlay/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/f250`
-- Authoritative map files:
-  `data/map_authority/p0_p8_hard_requirement_20260530`
-- Expected route evidence: `evidence/expected_route`
-- Expected FC 3.10 evidence: `evidence/expected_fc_3_10`
-- Static check script: `scripts/check_package.sh`
+| 文件 | 用途 |
+| --- | --- |
+| `f250_quick_complex_tutorial_20260605.tar.gz` | 教程主压缩包 |
+| `SHA256SUMS.txt` | 压缩包 SHA256 校验值 |
+| `f250_tutorial_validation_manifest_20260605.md` | 已验证结果与注意事项 |
+| `README.md` | 本中文操作说明 |
 
-## Assumptions And Prerequisites
+压缩包 SHA256 应为：
 
-This bundle is for a same-system Linux rebuild where the simulation stack is
-already installed. It does not vendor PX4, ROS, MAVROS, EGO-Planner, Gazebo, or
-GPU/desktop dependencies.
+```text
+FDB915EC40A8662E157DAF8548AE3473B7DB5BBB7C325E5F3015E98DA2AA788B
+```
 
-Required environment:
+## 已验证结果
 
-- ROS Noetic and catkin tools available on the target Linux system.
-- Gazebo Classic and PX4 SITL already available.
-- A compatible PX4-Autopilot tree supplied by the user through
-  `F250_PX4_ROOT`.
-- MAVROS and the EGO-Planner runtime dependencies already installed on the same
-  Linux system.
-- `screen` available for the human-facing launch scripts, unless the scripts are
-  adapted for a local foreground workflow.
-- A graphical desktop/display if using Gazebo GUI or RViz.
+该教程包来自已经通过检查的 F250 版本：
 
-## Install And Unpack
+- P0 悬停检查通过。
+- P0-P8 航线完成到 `P8/8`。
+- 静态障碍物安全，未发生静态碰撞。
+- 航线终点误差约 `0.605 m`。
+- FC 指标 3.10 保留正式通过结果：`E3.10_selected = 2.261625026799532%`。
 
-Choose a project location on the target Linux system, then unpack the archive:
+FC 3.10 是独立飞控稳态指标，不作为 P0-P8 避障航线是否通过的判定条件。
+
+## 环境前提
+
+请先准备一台 Linux 机器，推荐使用与实验环境相近的 Ubuntu / ROS Noetic 环境。需要已经具备：
+
+- ROS Noetic 和 catkin 工作区工具。
+- Gazebo Classic。
+- PX4 SITL 源码树。
+- MAVROS。
+- EGO-Planner 运行依赖。
+- `screen` 命令。
+- 图形桌面环境，用于显示 Gazebo 和 RViz。
+
+如果你的机器还没有完整仿真环境，请先完成 PX4、ROS、Gazebo、MAVROS 和 EGO-Planner 的基础安装，再使用本教程包。
+
+## 下载与校验
+
+可以直接在 GitHub 页面点击压缩包下载，也可以克隆仓库：
+
+```bash
+git clone https://github.com/cjx5d666/f250-maritime-quick-complex-tutorial.git
+cd f250-maritime-quick-complex-tutorial
+```
+
+校验压缩包：
+
+```bash
+sha256sum -c SHA256SUMS.txt
+```
+
+如果输出包含 `OK`，说明下载的压缩包未损坏。
+
+## 解压教程包
+
+选择一个工作目录，例如：
 
 ```bash
 mkdir -p ~/f250_tutorial
@@ -49,257 +72,120 @@ tar -xzf f250_quick_complex_tutorial_20260605.tar.gz -C ~/f250_tutorial
 cd ~/f250_tutorial/f250_quick_complex_tutorial
 ```
 
-Run the static package check before installing overlays or starting anything:
+先运行静态检查：
 
 ```bash
 scripts/check_package.sh
 ```
 
-The check verifies package structure, script syntax, Python compileability,
-broken symlinks, cache directories, legacy vehicle markers, and local VM path
-leaks.
+该脚本会检查包结构、脚本语法、Python 文件、符号链接、缓存目录、旧车辆标记和本地路径泄漏。
 
-## PX4 Overlay
+## 配置 PX4 路径
 
-Set `F250_PX4_ROOT` to the compatible PX4-Autopilot tree, then copy the F250
-airframe and Gazebo Classic model overlay:
+教程脚本需要知道你本机 PX4-Autopilot 源码树的位置。假设你的 PX4 源码在：
 
 ```bash
-export F250_PROJECT_ROOT="$(pwd -P)"
-export F250_PX4_ROOT="/path/to/PX4-Autopilot"
-
-test -d "$F250_PX4_ROOT" || { echo "missing F250_PX4_ROOT"; exit 2; }
-
-cp -av \
-  px4_overlay/ROMFS/px4fmu_common/init.d-posix/airframes/10020_gazebo-classic_f250 \
-  "$F250_PX4_ROOT/ROMFS/px4fmu_common/init.d-posix/airframes/"
-
-mkdir -p \
-  "$F250_PX4_ROOT/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models"
-cp -av \
-  px4_overlay/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/f250 \
-  "$F250_PX4_ROOT/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/"
+~/PX4-Autopilot-v1.16.0-src-main
 ```
 
-If your PX4 tree uses a different Gazebo Classic model path, copy the `f250`
-model directory to the equivalent SITL Gazebo Classic models directory in that
-tree.
-
-## Catkin Build
-
-Build the included catkin workspace from this package root:
+则设置：
 
 ```bash
-cd "$F250_PROJECT_ROOT/catkin_ws"
+export F250_PX4_ROOT=~/PX4-Autopilot-v1.16.0-src-main
+```
+
+如果你的 PX4 路径不同，请改成自己的实际路径。
+
+## 安装覆盖文件与构建
+
+进入教程包根目录后，按照包内说明安装 ROS 包与 PX4 覆盖文件。通常需要把：
+
+- `catkin_ws/src/f250_maritime_uav_sim`
+- `px4_overlay/ROMFS/.../10020_gazebo-classic_f250`
+- `px4_overlay/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/f250`
+
+放到对应的 catkin 工作区和 PX4 源码树中。
+
+完成后重新构建 catkin 工作区，并确保 ROS 环境已加载：
+
+```bash
 source /opt/ros/noetic/setup.bash
-catkin_make
-source devel/setup.bash
+source ~/catkin_ws/devel/setup.bash
 ```
 
-If your system uses `catkin build`, the equivalent is:
+如果你的工作区路径不是 `~/catkin_ws`，请改成自己的路径。
+
+## 第一步：启动到 P0 悬停
+
+进入脚本目录：
 
 ```bash
-cd "$F250_PROJECT_ROOT/catkin_ws"
-source /opt/ros/noetic/setup.bash
-catkin build
-source devel/setup.bash
+cd ~/catkin_ws/src/f250_maritime_uav_sim/scripts
 ```
 
-## Environment Setup
-
-Copy `env.example` to a local environment file and edit the PX4 path:
+启动仿真并飞到 P0 悬停：
 
 ```bash
-cd "$F250_PROJECT_ROOT"
-cp env.example env.local
+./f250_start_to_p0_hover.sh
 ```
 
-Set these explicitly in `env.local`:
+成功后应能看到 Gazebo / RViz 相关窗口，并且无人机进入 P0 附近的悬停状态。
+
+## 第二步：运行 FC 指标 3.10
+
+在 P0 悬停稳定后运行：
 
 ```bash
-export F250_PROJECT_ROOT="/path/to/f250_quick_complex_tutorial"
-export F250_PX4_ROOT="/path/to/PX4-Autopilot"
+./f250_run_fc_3_10_steady_state.sh
 ```
 
-Then source the environment and workspace setup:
+脚本会执行独立的飞控稳态指标检查。该指标用于查看飞控跟踪性能，不用于判定 P0-P8 避障航线是否通过。
+
+## 第三步：运行 P0-P8 航线
+
+继续运行固定 P0-P8 海上复杂场景航线：
 
 ```bash
-source env.local
-source /opt/ros/noetic/setup.bash
-source "$F250_PROJECT_ROOT/catkin_ws/devel/setup.bash"
+./f250_run_p0_p8_route.sh
 ```
 
-Useful defaults from `env.example`:
+期望结果是完成到 `P8/8`，并保持静态障碍物安全。
 
-- `MAP_AUTHORITY="$F250_PROJECT_ROOT/data/map_authority/p0_p8_hard_requirement_20260530"`
-- `RUN_ROOT="$F250_PROJECT_ROOT/runs/f250_human_scripts"`
-- `CURRENT_STATUS="$RUN_ROOT/current/status.env"`
-- `ENABLE_RVIZ=true`
-- `PX4_GUI=true`
+## 第四步：生成轨迹图
 
-## Run Sequence
-
-Use the scripts under
-`catkin_ws/src/f250_maritime_uav_sim/scripts`. The route acceptance and FC
-Metric 3.10 checks are separate. Stop the first stack before starting the FC
-run so the FC run starts from a clean P0 hover.
-
-1. Start and hold at P0 for route readiness:
+航线运行完成后生成最新的计划航线与实际飞行轨迹图：
 
 ```bash
-cd "$F250_PROJECT_ROOT"
-source env.local
-source /opt/ros/noetic/setup.bash
-source "$F250_PROJECT_ROOT/catkin_ws/devel/setup.bash"
-
-catkin_ws/src/f250_maritime_uav_sim/scripts/f250_start_to_p0_hover.sh
+./f250_plot_latest_run.sh
 ```
 
-2. Release and record the P0-P8 route:
+最终图应使用包内权威地图、规划航点和实际轨迹数据绘制。PNG 只是展示结果，CSV / JSON / YAML / SDF 才是几何与场景来源。
+
+## 第五步：停止仿真
+
+实验结束后停止相关进程：
 
 ```bash
-catkin_ws/src/f250_maritime_uav_sim/scripts/f250_run_p0_p8_route.sh
+./f250_stop_all.sh
 ```
 
-3. Generate the final planned-vs-flown plot for the latest route run:
+建议每次实验结束后都执行停止脚本，避免残留 ROS、Gazebo、PX4 或 MAVROS 进程影响下一次运行。
 
-```bash
-catkin_ws/src/f250_maritime_uav_sim/scripts/f250_plot_latest_run.sh
-```
+## 常见注意事项
 
-4. Stop the route simulation stack:
+- 本教程复现的是同一任务配置、同一场景、同一地图、同一 F250 模型和同一脚本流程。
+- 不保证不同机器上的 Gazebo / RViz 画面像素完全一致。
+- FC 3.10 多次运行可能有数值波动，正式记录以验证清单中的保留通过结果为准。
+- P0-P8 航线验收重点是完成 P8 和静态障碍物安全。
+- 如果脚本找不到 PX4，请先检查 `F250_PX4_ROOT` 是否设置正确。
+- 如果看不到 Gazebo 或 RViz，请检查图形桌面、显示变量和相关依赖。
 
-```bash
-catkin_ws/src/f250_maritime_uav_sim/scripts/f250_stop_all.sh
-```
+## 验证清单
 
-5. Start and hold at P0 again for the FC-only test:
-
-```bash
-catkin_ws/src/f250_maritime_uav_sim/scripts/f250_start_to_p0_hover.sh
-```
-
-6. Run FC Metric 3.10 steady-state evidence:
-
-```bash
-catkin_ws/src/f250_maritime_uav_sim/scripts/f250_run_fc_3_10_steady_state.sh
-```
-
-7. Final stop:
-
-```bash
-catkin_ws/src/f250_maritime_uav_sim/scripts/f250_stop_all.sh
-```
-
-## Expected Outputs And Acceptance
-
-Runs are written under:
+更多已验证结果、保留证据和 FC 3.10 重跑说明见：
 
 ```text
-$RUN_ROOT
+f250_tutorial_validation_manifest_20260605.md
 ```
 
-With the default `env.example`, this resolves to:
-
-```text
-$F250_PROJECT_ROOT/runs/f250_human_scripts
-```
-
-The current run symlink/status is:
-
-```text
-$CURRENT_STATUS
-```
-
-### P0 Readiness
-
-The P0 script should create a run directory, write `status.env`, start the
-F250 stack paused at P0, and report a hover target of:
-
-```text
-55.0,16.0,10.0,0.469929
-```
-
-The route script expects that current P0 status to identify vehicle `f250`,
-the fixed quick-complex scene, and the fixed world.
-
-### Route Acceptance
-
-Expected retained route family: `R4_H`.
-
-The selected retained route run is `lidar_lidar_R4_H_r2`. Representative
-expected values:
-
-- Route progress: P8 reached, displayed as P8/8.
-- Static safety: SAFE, with zero static geometry entries, zero static cloud
-  entries, and no static collision.
-- Selected-run static clearance: 0.8086800027841847 m.
-- Keypoint error over P1-P7: mean 0.238261136879 m, max
-  0.458080235519 m.
-- Endpoint error at P8: 0.5952538810440474 m.
-- Route task duration from P0 to P8: 113.361 s for the selected run.
-
-Route acceptance excludes FC Metric 3.10 and yaw pass/fail. Dynamic boat
-clearance is telemetry only for this route decision.
-
-### Plot Acceptance
-
-The plot script should write these files in the selected route run directory:
-
-- `latest_planned_vs_flown.png`
-- `latest_plot_summary.json`
-- `latest_plot_points.csv`
-- `latest_plot_summary.md`
-
-The plot must be generated from authoritative CSV/JSON/map inputs on the same
-axes. Do not use a cached PNG as geometry truth or as a trajectory background.
-The retained package includes `evidence/expected_route/f250_historical_planned_vs_flown.png`
-as a review artifact only.
-
-### FC Metric 3.10 Acceptance
-
-Expected final retained FC formal value:
-
-```text
-E3.10_selected=2.261625026799532%
-```
-
-The retained FC evidence has:
-
-- All 40 formal metric windows settled.
-- `E_pos=0.727682193133525%`.
-- `E_vel_selected=2.261625026799532%`.
-- `E_yaw=0.28562253585743336%`.
-- Selected velocity speed: 2.0 m/s.
-- Geometry audit conclusion: SAFE for the FC 3.10 A/B and decagon geometry.
-
-Same-day duplicate FC re-runs settled, but the values varied. Those duplicate
-re-runs were not used as the final pass evidence; use the retained value above
-as the formal expected result.
-
-## Cleanup And Troubleshooting
-
-Use the stop script whenever a run fails, a launch blocks on existing runtime,
-or you need a clean restart:
-
-```bash
-catkin_ws/src/f250_maritime_uav_sim/scripts/f250_stop_all.sh
-```
-
-The stop script targets the F250 maritime PX4/Gazebo/ROS/RViz/EGO-Planner
-runtime chain and F250 script screen sessions. It preserves run/result
-directories.
-
-Troubleshooting basics:
-
-- If `f250_start_to_p0_hover.sh` reports existing runtime, run
-  `f250_stop_all.sh`, then retry.
-- If route or FC scripts cannot find ROS topics, confirm the P0 hover stack is
-  still active and `CURRENT_STATUS` points to the current P0 `status.env`.
-- If catkin packages are missing, re-source `/opt/ros/noetic/setup.bash` and
-  `$F250_PROJECT_ROOT/catkin_ws/devel/setup.bash`.
-- If PX4 cannot find the F250 airframe or model, re-check the PX4 overlay copy
-  and `F250_PX4_ROOT`.
-- Keep concise successful run outputs, structured JSON/CSV summaries, and final
-  review plots. Do not retain high-volume logs, failed tuning sweeps, cache
-  directories, or temporary runtime log folders in the tutorial package.
+建议同学先读完本 README，再查看验证清单中的结果数值和注意事项。
