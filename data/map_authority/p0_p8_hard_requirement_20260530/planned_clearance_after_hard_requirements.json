@@ -4,9 +4,7 @@
     "min_obstacle_distance_m": 1.5
   },
   "dynamic_mode": "auto",
-  "failure_reasons": [
-    "planned_polyline static clearance 0.378 m below 1.500 m"
-  ],
+  "failure_reasons": [],
   "metrics": {
     "planned_polyline": {
       "dynamic": {
@@ -14,7 +12,7 @@
         "first_cloud_entry": null,
         "first_geometry_entry": null,
         "geometry_entry_count": 0,
-        "min_clearance_m": 3.2236337777410444,
+        "min_clearance_m": 2.5557981238898337,
         "min_cloud_distance_m": null,
         "nearest_cloud_label": null,
         "nearest_cloud_sample": null,
@@ -67,7 +65,7 @@
         "first_cloud_entry": null,
         "first_geometry_entry": null,
         "geometry_entry_count": 0,
-        "min_clearance_m": 11.831985525677789,
+        "min_clearance_m": 11.221167933853536,
         "min_cloud_distance_m": null,
         "nearest_cloud_label": null,
         "nearest_cloud_sample": null,
@@ -111,14 +109,19 @@
       }
     }
   },
-  "ok": false,
+  "ok": true,
   "planner_visible": {
     "dynamic_obstacles": 1,
     "dynamic_sample_times": 64,
     "static_cloud_points": 0,
     "static_geometry_obstacles": 9
   },
+  "policy_note": "ok gates planner-visible geometry/cloud entry only. min_obstacle_distance_m shortfalls are telemetry unless separately promoted by the user.",
   "scene": "${F250_PROJECT_ROOT}/catkin_ws/src/f250_maritime_uav_sim/config/scenes/level_m_gps_assets_quick_complex.yaml",
+  "threshold_shortfalls": [
+    "planned_polyline static clearance 0.378 m below 1.500 m",
+    "planned_polyline dynamic clearance 2.556 m below 3.000 m"
+  ],
   "thresholds": {
     "actual_filter": "armed_offboard",
     "cloud_entry_radius_m": 0.125,

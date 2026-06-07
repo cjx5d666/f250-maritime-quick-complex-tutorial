@@ -42,3 +42,10 @@ Use numbered current outputs for display. This F250 tutorial package keeps its
 retained display plot at
 `../../../evidence/expected_route/f250_historical_planned_vs_flown.png`.
 Do not overlay trajectories onto a previously rendered figure PNG.
+
+## RViz Display Layer
+
+RViz scene markers may publish additional static mesh context from the same
+scene YAML `visual_vessels` entries, such as ships, islands, bridges, and wind
+turbines. Those markers are visual context only and do not change planner cloud
+geometry, route geometry, static obstacle safety gates, or this map authority.

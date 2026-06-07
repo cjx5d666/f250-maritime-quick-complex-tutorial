@@ -19,8 +19,8 @@ Stops the F250 maritime quick-complex simulation chain:
   ROS master/launch, Gazebo, PX4 SITL, MAVROS, EGO-Planner, RViz,
   metric monitor, and F250 human-script screen sessions.
 
-It preserves run/result directories and intentionally does not match Codex,
-app-server, ssh/sshd, or general workspace shells.
+It preserves run/result directories and intentionally does not match unrelated tools,
+ssh/sshd, or general workspace shells.
 
 Useful environment overrides:
   RUN_ROOT=...                  default: ${PROJECT_ROOT}/runs/f250_human_scripts

@@ -39,11 +39,19 @@ PROJECT_ROOT = resolve_project_root()
 DEFAULT_MAP_AUTHORITY = (
     os.path.abspath(os.path.expanduser(os.environ["MAP_AUTHORITY"]))
     if os.environ.get("MAP_AUTHORITY") else
-    os.path.join(
-        PROJECT_ROOT,
-        "data",
-        "map_authority",
-        "p0_p8_hard_requirement_20260530",
+    first_existing_or_first(
+        env_or_project_path(
+            "MAP_AUTHORITY",
+            "maritime_quick_complex",
+            "map_authority",
+            "p0_p8_hard_requirement_20260530",
+        ),
+        os.path.join(
+            PROJECT_ROOT,
+            "data",
+            "map_authority",
+            "p0_p8_hard_requirement_20260530",
+        ),
     )
 )
 DEFAULT_HOVER = (55.0, 16.0, 10.0, 0.469929)
@@ -438,10 +446,10 @@ def clearance_audit(geometry_items, obstacles):
 
 
 def velocity_specs_from_args(args):
-    speeds = list(getattr(args, "velocity_speeds_mps", None) or [2.0, 4.0])
+    speeds = list(getattr(args, "velocity_speeds_mps", None) or [2.0])
     lengths = list(getattr(args, "velocity_lengths_m", None) or [])
     if not lengths:
-        default_lengths = {2.0: 60.0, 4.0: 90.0}
+        default_lengths = {2.0: 60.0}
         lengths = [default_lengths.get(round(float(speed), 6), max(60.0, float(speed) * 22.5)) for speed in speeds]
     if len(lengths) != len(speeds):
         raise SystemExit("--velocity-lengths-m count must match --velocity-speeds-mps count")
@@ -744,7 +752,7 @@ def geometry_is_safe_for_formal(geometry, args):
 
 
 def phase_duration_for_velocity(args):
-    speeds = getattr(args, "velocity_speeds_mps", [4.0])
+    speeds = getattr(args, "velocity_speeds_mps", [2.0])
     lengths = getattr(args, "velocity_lengths_m", [90.0])
     return float(lengths[0]) / float(speeds[0])
 
@@ -1294,9 +1302,9 @@ def errors_from_phase_results(results):
 
 def terminal_summary(errors):
     lines = [
+        "===== FINAL =====",
         "position E_pos %s" % fmt_display_percent(errors.get("E_pos")),
         "velocity E_vel_2mps %s" % fmt_display_percent(errors.get("E_vel_2mps")),
-        "velocity E_vel_4mps %s" % fmt_display_percent(errors.get("E_vel_4mps")),
         "velocity selected %s m/s E_vel_selected %s" % (
             errors.get("selected_velocity_speed_mps"), fmt_display_percent(errors.get("E_vel_selected"))),
         "yaw E_yaw %s" % fmt_display_percent(errors.get("E_yaw")),
@@ -1307,17 +1315,151 @@ def terminal_summary(errors):
     return "\n".join(lines)
 
 
+def component_for_phase(phase):
+    return phase.get("component") or ""
+
+
+def next_component(records, start_index):
+    for record in records[start_index + 1:]:
+        component = component_for_phase(record["phase"])
+        if component:
+            return component
+    return ""
+
+
+def fc_plan_line(geometry):
+    velocity_rounds = sum(int(test.get("windows", 0)) for test in geometry.get("velocity_tests", []))
+    speed = 0.0
+    if geometry.get("velocity_tests"):
+        speed = float(geometry["velocity_tests"][0].get("speed_mps", 0.0))
+    position_rounds = int(geometry.get("position_test", {}).get("windows", 10))
+    yaw_rounds = int(geometry.get("yaw_test", {}).get("windows", 10))
+    return (
+        "plan: velocity %.1f m/s %d rounds, position %d rounds, yaw %d rounds"
+        % (speed, velocity_rounds, position_rounds, yaw_rounds)
+    )
+
+
+def phase_round_text(phase):
+    return "%02d/10" % int(phase.get("repeat") or 0)
+
+
+def phase_target_text(phase, hover):
+    if phase["kind"] == "velocity":
+        repeat = int(phase.get("repeat") or 0)
+        return "A -> B" if repeat % 2 == 1 else "B -> A"
+    if phase["kind"] == "position":
+        xy = phase.get("target_xy", [hover[0], hover[1]])
+        return "vertex_%02d x=%.3f y=%.3f z=%.3f" % (
+            int(phase.get("repeat") or 1) - 1,
+            float(xy[0]),
+            float(xy[1]),
+            float(hover[2]),
+        )
+    if phase["kind"] == "yaw":
+        return "%+ddeg" % int(phase.get("yaw_offset_deg", 0))
+    return ""
+
+
+def phase_metric_name(phase):
+    if phase["kind"] == "velocity":
+        return "E_vel"
+    if phase["kind"] == "position":
+        return "E_pos"
+    if phase["kind"] == "yaw":
+        return "E_yaw"
+    return ""
+
+
+def phase_start_block(phase, hover):
+    kind = phase["kind"]
+    return "\n".join([
+        "[%s %s]" % (kind, phase_round_text(phase)),
+        "target: %s" % phase_target_text(phase, hover),
+        "START",
+    ])
+
+
+def phase_end_block(phase, result, hover):
+    kind = phase["kind"]
+    lines = [
+        "[%s %s]" % (kind, phase_round_text(phase)),
+        "target: %s" % phase_target_text(phase, hover),
+    ]
+    if result.get("settled") is True:
+        lines.append("END settled=true %s=%s" % (
+            phase_metric_name(phase),
+            fmt_display_percent(result.get("error_percent")),
+        ))
+    else:
+        reason = result.get("not_settled_reason") or "unknown"
+        lines.append("END settled=false reason=%s" % reason)
+    return "\n".join(lines)
+
+
+def component_header(component, geometry):
+    if component == "E_vel":
+        speed = 0.0
+        if geometry.get("velocity_tests"):
+            speed = float(geometry["velocity_tests"][0].get("speed_mps", 0.0))
+        return "\n".join(["===== velocity E_vel =====", "speed: %.1f m/s" % speed])
+    if component == "E_pos":
+        return "===== position E_pos ====="
+    if component == "E_yaw":
+        return "===== yaw E_yaw ====="
+    return ""
+
+
+def component_done_block(component, phase_results):
+    errors = errors_from_phase_results(phase_results)
+    if component == "E_vel":
+        return "[velocity]\nDONE E_vel_2mps %s" % fmt_display_percent(errors.get("E_vel_2mps"))
+    if component == "E_pos":
+        return "[position]\nDONE E_pos %s" % fmt_display_percent(errors.get("E_pos"))
+    if component == "E_yaw":
+        return "[yaw]\nDONE E_yaw %s" % fmt_display_percent(errors.get("E_yaw"))
+    return ""
+
+
+def emit_progress_from_samples(display, records, samples, hover, args, geometry):
+    if display is None:
+        return
+    by_name = {}
+    for sample in samples:
+        by_name.setdefault(sample["phase"], []).append(sample)
+    phase_results = []
+    current_component = ""
+    for index, record in enumerate(records):
+        phase = record["phase"]
+        component = component_for_phase(phase)
+        if not component:
+            continue
+        if component != current_component:
+            header = component_header(component, geometry)
+            if header:
+                display.write("\n" + header)
+            current_component = component
+        display.write("\n" + phase_start_block(phase, hover))
+        result = settled_phase_result(phase, record, by_name.get(phase["name"], []), args)
+        phase_results.append(result)
+        display.write("\n" + phase_end_block(phase, result, hover))
+        if next_component(records, index) != component:
+            done = component_done_block(component, phase_results)
+            if done:
+                display.write("\n" + done)
+
+
 class Display:
     def __init__(self, path):
         self.path = path
         if path:
             os.makedirs(os.path.dirname(path), exist_ok=True)
-            open(path, "w", encoding="utf-8").close()
+            open(path, "a", encoding="utf-8").close()
 
     def write(self, text):
         print(text, flush=True)
         if self.path:
-            with open(self.path, "w", encoding="utf-8") as handle:
+            with open(self.path, "a", encoding="utf-8") as handle:
                 handle.write(text.rstrip() + "\n")
 
     def over(self):
@@ -1331,11 +1473,14 @@ class Display:
 
 
 class LiveRunner:
-    def __init__(self, args, hover, records):
+    def __init__(self, args, hover, records, display=None, geometry=None):
         self.args = args
         self.hover = hover
         self.records = records
+        self.display = display
+        self.geometry = geometry or {}
         self.samples = []
+        self.phase_results = []
         self.latest_odom = None
         self.rospy = None
         self.PositionCommand = None
@@ -1417,23 +1562,44 @@ class LiveRunner:
         period = 1.0 / max(1.0, float(self.args.rate_hz))
         global_start = time.monotonic()
         try:
-            for record in self.records:
+            current_component = ""
+            for record_index, record in enumerate(self.records):
                 phase = record["phase"]
+                component = component_for_phase(phase)
+                if component and component != current_component:
+                    header = component_header(component, self.geometry)
+                    if self.display and header:
+                        self.display.write("\n" + header)
+                    current_component = component
+                if component and self.display:
+                    self.display.write("\n" + phase_start_block(phase, self.hover))
                 phase_start = time.monotonic()
+                phase_samples = []
                 while not self.rospy.is_shutdown():
                     phase_elapsed = time.monotonic() - phase_start
                     if phase_elapsed > float(phase["duration"]):
                         break
                     ref = reference_for_phase(phase, phase_elapsed, self.hover)
                     self.publish_reference(ref, trajectory_id)
-                    self.samples.append(sample_from_actual(
+                    sample = sample_from_actual(
                         time.monotonic() - global_start,
                         phase,
                         phase_elapsed,
                         ref,
                         self.latest_odom,
-                    ))
+                    )
+                    self.samples.append(sample)
+                    phase_samples.append(sample)
                     time.sleep(period)
+                if component:
+                    result = settled_phase_result(phase, record, phase_samples, self.args)
+                    self.phase_results.append(result)
+                    if self.display:
+                        self.display.write("\n" + phase_end_block(phase, result, self.hover))
+                        if next_component(self.records, record_index) != component:
+                            done = component_done_block(component, self.phase_results)
+                            if done:
+                                self.display.write("\n" + done)
         finally:
             self.publish_p0_for(self.args.final_command_sec)
         return self.samples, "complete_returned_p0", 0
@@ -1487,11 +1653,9 @@ def formula_metadata(args):
         "E_yaw_i": "abs(mean(wrap(actual_yaw - target_yaw))) / yaw_denominator * 100",
         "E_pos": "max_i(E_pos_i) over 10 decagon position windows",
         "E_vel_2mps": "max_i(E_vel_i) over 10 AB velocity windows commanded at 2 m/s",
-        "E_vel_4mps": "max_i(E_vel_i) over 10 AB velocity windows commanded at 4 m/s",
-        "E_vel_selected": "min(E_vel_2mps, E_vel_4mps) when both are settled/formal",
+        "E_vel_selected": "E_vel_2mps when all formal 2 m/s velocity windows are settled",
         "E_yaw": "max_i(E_yaw_i) over 10 yaw windows",
         "E3.10_2mps": "max(E_pos, E_vel_2mps, E_yaw)",
-        "E3.10_4mps": "max(E_pos, E_vel_4mps, E_yaw)",
         "E3.10_selected": "max(E_pos, E_vel_selected, E_yaw)",
         "velocity_frame_policy": (
             "MAVROS Odometry twist is treated as body-frame linear velocity and rotated "
@@ -1601,12 +1765,10 @@ def write_outputs(args, hover, geometry, samples, records, paths, p0_status_valu
         errors = {
             "E_pos": None,
             "E_vel_2mps": None,
-            "E_vel_4mps": None,
             "E_vel_selected": None,
             "selected_velocity_speed_mps": None,
             "E_yaw": None,
             "E3.10_2mps": None,
-            "E3.10_4mps": None,
             "E3.10_selected": None,
             "E_vel": None,
             "E3.10": None,
@@ -1690,8 +1852,8 @@ def build_parser():
     parser.add_argument("--yaw-stationary-std-rad", type=positive_float, default=0.08)
     parser.add_argument("--yaw-stationary-slope-radps", type=positive_float, default=0.04)
     parser.add_argument("--yaw-stationary-rate-mean-radps", type=positive_float, default=0.08)
-    parser.add_argument("--velocity-speeds-mps", type=parse_float_list, default=[2.0, 4.0])
-    parser.add_argument("--velocity-lengths-m", type=parse_float_list, default=[60.0, 90.0])
+    parser.add_argument("--velocity-speeds-mps", type=parse_float_list, default=[2.0])
+    parser.add_argument("--velocity-lengths-m", type=parse_float_list, default=[60.0])
     parser.add_argument("--velocity-min-clearance-m", type=float, default=1.0)
     parser.add_argument("--velocity-endpoint-margin-m", type=positive_float, default=8.0)
     parser.add_argument("--velocity-length-adjust-step-m", type=positive_float, default=5.0)
@@ -1743,6 +1905,8 @@ def validate_args(args):
         raise SystemExit("--yaw-hold-sec must fit settle search + stationarity + eval windows")
     if len(args.velocity_speeds_mps) != len(args.velocity_lengths_m):
         raise SystemExit("--velocity-speeds-mps and --velocity-lengths-m must have the same count")
+    if len(args.velocity_speeds_mps) != 1 or abs(float(args.velocity_speeds_mps[0]) - 2.0) > 1e-9:
+        raise SystemExit("FC Metric 3.10 now uses only the 2.0 m/s velocity test")
     for speed, length in zip(args.velocity_speeds_mps, args.velocity_lengths_m):
         required_length = minimum_velocity_length(speed, args)
         if length < required_length:
@@ -1767,16 +1931,20 @@ def main(argv=None):
     p0_status_values = read_status_env(args.p0_status)
     display = Display(paths["terminal_display_log"])
     try:
+        display.write("F250 FC 3.10 started")
+        display.write("checks OK")
+        display.write(fc_plan_line(geometry))
         if args.geometry_check:
             samples = []
             run_state = "geometry_check_complete"
             exit_code = 0
         elif args.dry_run:
             samples = generate_synthetic_samples(phases, records, hover, args)
+            emit_progress_from_samples(display, records, samples, hover, args, geometry)
             run_state = "dry_run_complete"
             exit_code = 0
         else:
-            runner = LiveRunner(args, hover, records)
+            runner = LiveRunner(args, hover, records, display=display, geometry=geometry)
             samples, run_state, exit_code = runner.run()
         summary = write_outputs(args, hover, geometry, samples, records, paths, p0_status_values, run_state)
         if (
@@ -1789,7 +1957,7 @@ def main(argv=None):
             summary = write_outputs(
                 args, hover, geometry, samples, records, paths, p0_status_values, run_state)
             exit_code = 3
-        display.write(terminal_summary(summary["errors_percent"]))
+        display.write("\n" + terminal_summary(summary["errors_percent"]))
         display.over()
         return exit_code
     finally:

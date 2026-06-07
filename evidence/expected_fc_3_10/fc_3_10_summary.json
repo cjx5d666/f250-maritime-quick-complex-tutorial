@@ -11,12 +11,10 @@
   "errors_percent": {
     "E3.10": 2.261625026799532,
     "E3.10_2mps": 2.261625026799532,
-    "E3.10_4mps": 4.706463790579812,
     "E3.10_selected": 2.261625026799532,
     "E_pos": 0.727682193133525,
     "E_vel": 2.261625026799532,
     "E_vel_2mps": 2.261625026799532,
-    "E_vel_4mps": 4.706463790579812,
     "E_vel_selected": 2.261625026799532,
     "E_yaw": 0.28562253585743336,
     "all_metric_windows_settled": true,
@@ -25,14 +23,12 @@
   },
   "formula_metadata": {
     "E3.10_2mps": "max(E_pos, E_vel_2mps, E_yaw)",
-    "E3.10_4mps": "max(E_pos, E_vel_4mps, E_yaw)",
     "E3.10_selected": "max(E_pos, E_vel_selected, E_yaw)",
     "E_pos": "max_i(E_pos_i) over 10 decagon position windows",
     "E_pos_i": "norm(mean(actual_pos_xy) - target_xy) / R * 100",
     "E_vel_2mps": "max_i(E_vel_i) over 10 AB velocity windows commanded at 2 m/s",
-    "E_vel_4mps": "max_i(E_vel_i) over 10 AB velocity windows commanded at 4 m/s",
     "E_vel_i": "norm(mean(actual_vel_world_xy) - desired_vel_xy) / commanded_speed * 100",
-    "E_vel_selected": "min(E_vel_2mps, E_vel_4mps) when both are settled/formal",
+    "E_vel_selected": "E_vel_2mps when all formal 2 m/s velocity windows are settled",
     "E_yaw": "max_i(E_yaw_i) over 10 yaw windows",
     "E_yaw_i": "abs(mean(wrap(actual_yaw - target_yaw))) / yaw_denominator * 100",
     "eval_window_sec": 5.0,
@@ -56,13 +52,11 @@
     "transient_policy": "For each constant target phase, ignore transient response before settle_search_start; search for a stationary window, then compute error only over the following eval window.",
     "velocity_frame_policy": "MAVROS Odometry twist is treated as body-frame linear velocity and rotated by current yaw into local/world XY before comparison",
     "velocity_lengths_m": [
-      60.0,
-      90.0
+      60.0
     ],
     "velocity_settle_search_start_sec": 6.0,
     "velocity_speeds_mps": [
-      2.0,
-      4.0
+      2.0
     ],
     "yaw_settle_search_start_sec": 5.0
   },
@@ -654,475 +648,6 @@
       "steady_sample_count": "",
       "steady_window_sec": "",
       "transient_start_sec": 303.0,
-      "velocity_key": "",
-      "velocity_speed_mps": ""
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        -3.9664736515068846,
-        0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 328.5,
-      "error_percent": 4.2961214856045915,
-      "eval_end_sec": 320.0,
-      "eval_sample_count": 50,
-      "eval_start_sec": 315.0,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_01_A_to_B",
-      "repeat": 1,
-      "sample_count": 224,
-      "settle_search_start_sec": 312.0,
-      "settled": true,
-      "settled_start_sec": 312.0,
-      "start_sec": 306.0,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.01859953597053594,
-        "speed_std_mps": 0.043719433612625334,
-        "valid": true,
-        "velocity_slope_mps2": 0.026231764431174014,
-        "velocity_std_mps": 0.05838303127516978
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        -3.823115212164597,
-        0.42204672745704225
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 306.0,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        3.9664736515068846,
-        -0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 351.0,
-      "error_percent": 4.706463790579812,
-      "eval_end_sec": 342.5,
-      "eval_sample_count": 50,
-      "eval_start_sec": 337.5,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_02_B_to_A",
-      "repeat": 2,
-      "sample_count": 224,
-      "settle_search_start_sec": 334.5,
-      "settled": true,
-      "settled_start_sec": 334.5,
-      "start_sec": 328.5,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.06507324365448157,
-        "speed_std_mps": 0.07625828555029557,
-        "valid": true,
-        "velocity_slope_mps2": 0.0734287319413661,
-        "velocity_std_mps": 0.09982346882819362
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        3.823143781233517,
-        -0.3947477151543537
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 328.5,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        -3.9664736515068846,
-        0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 373.5,
-      "error_percent": 3.4445412173053325,
-      "eval_end_sec": 365.0,
-      "eval_sample_count": 50,
-      "eval_start_sec": 360.0,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_03_A_to_B",
-      "repeat": 3,
-      "sample_count": 224,
-      "settle_search_start_sec": 357.0,
-      "settled": true,
-      "settled_start_sec": 357.0,
-      "start_sec": 351.0,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.10303904423247358,
-        "speed_std_mps": 0.09859534617215743,
-        "valid": true,
-        "velocity_slope_mps2": 0.1039632965610564,
-        "velocity_std_mps": 0.1027008915643494
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        -3.865089279155196,
-        0.4235038392294252
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 351.0,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        3.9664736515068846,
-        -0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 396.0,
-      "error_percent": 4.341125014812127,
-      "eval_end_sec": 387.5,
-      "eval_sample_count": 50,
-      "eval_start_sec": 382.5,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_04_B_to_A",
-      "repeat": 4,
-      "sample_count": 224,
-      "settle_search_start_sec": 379.5,
-      "settled": true,
-      "settled_start_sec": 379.5,
-      "start_sec": 373.5,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.09383267977006945,
-        "speed_std_mps": 0.09460860127795427,
-        "valid": true,
-        "velocity_slope_mps2": 0.09398365946693196,
-        "velocity_std_mps": 0.10589020056305848
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        3.8474344544475567,
-        -0.3903834377436517
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 373.5,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        -3.9664736515068846,
-        0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 418.5,
-      "error_percent": 4.093586975692911,
-      "eval_end_sec": 410.0,
-      "eval_sample_count": 50,
-      "eval_start_sec": 405.0,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_05_A_to_B",
-      "repeat": 5,
-      "sample_count": 224,
-      "settle_search_start_sec": 402.0,
-      "settled": true,
-      "settled_start_sec": 402.0,
-      "start_sec": 396.0,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.06345410495569159,
-        "speed_std_mps": 0.06423559026725176,
-        "valid": true,
-        "velocity_slope_mps2": 0.0661393822712467,
-        "velocity_std_mps": 0.07055644850838035
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        -3.8476387114111206,
-        0.4041536680231063
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 396.0,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        3.9664736515068846,
-        -0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 441.0,
-      "error_percent": 3.649590826779788,
-      "eval_end_sec": 432.5,
-      "eval_sample_count": 50,
-      "eval_start_sec": 427.5,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_06_B_to_A",
-      "repeat": 6,
-      "sample_count": 224,
-      "settle_search_start_sec": 424.5,
-      "settled": true,
-      "settled_start_sec": 424.5,
-      "start_sec": 418.5,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.07410619923059707,
-        "speed_std_mps": 0.0775288026177475,
-        "valid": true,
-        "velocity_slope_mps2": 0.07393895428022566,
-        "velocity_std_mps": 0.09510889883131213
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        3.886650319523793,
-        -0.39457731392710593
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 418.5,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        -3.9664736515068846,
-        0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 463.5,
-      "error_percent": 3.5157185157215625,
-      "eval_end_sec": 455.0,
-      "eval_sample_count": 50,
-      "eval_start_sec": 450.0,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_07_A_to_B",
-      "repeat": 7,
-      "sample_count": 224,
-      "settle_search_start_sec": 447.0,
-      "settled": true,
-      "settled_start_sec": 447.0,
-      "start_sec": 441.0,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.08778997349786956,
-        "speed_std_mps": 0.08825403043655373,
-        "valid": true,
-        "velocity_slope_mps2": 0.08796778038837856,
-        "velocity_std_mps": 0.09329629709988527
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        -3.8659663097559336,
-        0.41844424555649057
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 441.0,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        3.9664736515068846,
-        -0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 486.0,
-      "error_percent": 3.9880925382138286,
-      "eval_end_sec": 477.5,
-      "eval_sample_count": 50,
-      "eval_start_sec": 472.5,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_08_B_to_A",
-      "repeat": 8,
-      "sample_count": 224,
-      "settle_search_start_sec": 469.5,
-      "settled": true,
-      "settled_start_sec": 469.5,
-      "start_sec": 463.5,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.08506463668624506,
-        "speed_std_mps": 0.08250277785416911,
-        "valid": true,
-        "velocity_slope_mps2": 0.08497215040403927,
-        "velocity_std_mps": 0.09510240607674479
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        3.8569968242795034,
-        -0.40077578614853765
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 463.5,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        -3.9664736515068846,
-        0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 508.5,
-      "error_percent": 3.7439238331493296,
-      "eval_end_sec": 500.0,
-      "eval_sample_count": 50,
-      "eval_start_sec": 495.0,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_09_A_to_B",
-      "repeat": 9,
-      "sample_count": 224,
-      "settle_search_start_sec": 492.0,
-      "settled": true,
-      "settled_start_sec": 492.0,
-      "start_sec": 486.0,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.07949744380739131,
-        "speed_std_mps": 0.0811672100853191,
-        "valid": true,
-        "velocity_slope_mps2": 0.08037599869090109,
-        "velocity_std_mps": 0.08464124251439847
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        -3.860355127773541,
-        0.41113507023512696
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 486.0,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": 4.0,
-      "desired": [
-        3.9664736515068846,
-        -0.5168043845611576
-      ],
-      "duration_sec": 22.5,
-      "end_sec": 531.0,
-      "error_percent": 3.208963297796754,
-      "eval_end_sec": 522.5,
-      "eval_sample_count": 50,
-      "eval_start_sec": 517.5,
-      "eval_window_sec": 5.0,
-      "evaluated_component": "E_vel",
-      "kind": "velocity",
-      "not_settled_reason": "",
-      "phase": "velocity_4mps_window_10_B_to_A",
-      "repeat": 10,
-      "sample_count": 224,
-      "settle_search_start_sec": 514.5,
-      "settled": true,
-      "settled_start_sec": 514.5,
-      "start_sec": 508.5,
-      "stationarity_metrics": {
-        "endpoint_margin_remaining_m": 34.0,
-        "endpoint_margin_required_m": 8.0,
-        "sample_count": 30,
-        "speed_slope_mps2": 0.02952313044468467,
-        "speed_std_mps": 0.04114469543629361,
-        "valid": true,
-        "velocity_slope_mps2": 0.03833275728644929,
-        "velocity_std_mps": 0.06067567655087163
-      },
-      "stationarity_window_sec": 3.0,
-      "steady_actual": [
-        3.910791067061047,
-        -0.4011524822681008
-      ],
-      "steady_sample_count": 30,
-      "steady_window_sec": "",
-      "transient_start_sec": 508.5,
-      "velocity_key": "4mps",
-      "velocity_speed_mps": 4.0
-    },
-    {
-      "denominator": "",
-      "desired": "",
-      "duration_sec": 3.0,
-      "end_sec": 534.0,
-      "error_percent": "",
-      "eval_end_sec": "",
-      "eval_sample_count": "",
-      "eval_start_sec": "",
-      "eval_window_sec": 5.0,
-      "evaluated_component": "",
-      "kind": "hold",
-      "not_settled_reason": "",
-      "phase": "hold_after_velocity_4mps_at_A",
-      "repeat": 10,
-      "sample_count": 30,
-      "settle_search_start_sec": 531.0,
-      "settled": "",
-      "settled_start_sec": "",
-      "start_sec": 531.0,
-      "stationarity_metrics": "",
-      "stationarity_window_sec": 3.0,
-      "steady_actual": "",
-      "steady_sample_count": "",
-      "steady_window_sec": "",
-      "transient_start_sec": 531.0,
       "velocity_key": "",
       "velocity_speed_mps": ""
     },
@@ -1988,7 +1513,7 @@
   "run_dir": "${F250_PROJECT_ROOT}/evidence/expected_fc_3_10",
   "run_label": "f250_fc_3_10_settled_formal_20260605",
   "run_state": "complete_returned_p0",
-  "sample_count": 8789,
+  "sample_count": 6519,
   "schema": "f250_fc_3_10_steady_state_fc_only_settled_v3",
   "source_p0_hover": {
     "hover_target_arg": [
@@ -2089,7 +1614,7 @@
         23.752065768417364
       ],
       "L_m": 60.0,
-      "note": "Legacy summary of the first velocity test; use velocity_tests for all formal speeds.",
+      "note": "Formal 2 m/s velocity test used for the selected FC Metric 3.10 value.",
       "round_trips": 5,
       "speed_mps": 2.0,
       "windows": 10,
@@ -2193,106 +1718,6 @@
         "requested_L_m": 60.0,
         "round_trips": 5,
         "speed_mps": 2.0,
-        "windows": 10,
-        "z": 10.0
-      },
-      {
-        "A_xy": [
-          55.0,
-          16.0
-        ],
-        "B_xy": [
-          -34.245657158904905,
-          27.628098652626047
-        ],
-        "L_m": 90.0,
-        "command_velocity_policy": "desired world XY velocity is +speed*u or -speed*u on AB legs",
-        "endpoint_margin_m": 8.0,
-        "key": "4mps",
-        "leg_duration_sec": 22.5,
-        "length_adjusted": false,
-        "minimum_length_for_settle_eval_m": 64.0,
-        "planner_obstacle_clearance": {
-          "closest_planner_obstacle": "o1_left_of_reference",
-          "closest_test_item": "velocity_4mps_A_B_segment",
-          "conclusion": "SAFE",
-          "min_clearance_m": 29.179247466445055,
-          "per_obstacle": [
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 29.179247466445055,
-              "name": "o1_left_of_reference",
-              "shape": "cylinder",
-              "type": "buoy_cylinder"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 29.179798156122352,
-              "name": "o2_right_of_reference",
-              "shape": "cylinder",
-              "type": "buoy_cylinder"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 48.899441198920584,
-              "name": "o3_on_reference",
-              "shape": "cylinder",
-              "type": "buoy_cylinder"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 64.39972380684236,
-              "name": "o4_on_reference",
-              "shape": "cylinder",
-              "type": "buoy_cylinder"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 139.9239308163612,
-              "name": "o5_near_island_bank",
-              "shape": "cylinder",
-              "type": "buoy_cylinder"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 81.42108663784502,
-              "name": "w1_wind_channel_cloud",
-              "shape": "box",
-              "type": "static_box"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 90.8914240087174,
-              "name": "w2_wind_channel_cloud",
-              "shape": "box",
-              "type": "static_box"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 101.09969152958594,
-              "name": "w3_wind_channel_cloud",
-              "shape": "box",
-              "type": "static_box"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 111.84304052712875,
-              "name": "w4_wind_channel_cloud",
-              "shape": "box",
-              "type": "static_box"
-            },
-            {
-              "closest_test_item": "velocity_4mps_A_B_segment",
-              "min_clearance_m": 128.31305560471733,
-              "name": "d1_wamv_crossing_obstacle",
-              "shape": "box",
-              "type": "dynamic_obstacle"
-            }
-          ]
-        },
-        "requested_L_m": 90.0,
-        "round_trips": 5,
-        "speed_mps": 4.0,
         "windows": 10,
         "z": 10.0
       }

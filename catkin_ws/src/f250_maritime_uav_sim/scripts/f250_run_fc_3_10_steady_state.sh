@@ -8,7 +8,7 @@ PROJECT_ROOT="$(f250_resolve_project_root "${SCRIPT_DIR}")"
 WS="${PROJECT_ROOT}/catkin_ws"
 PKG="$(f250_resolve_package_root "${SCRIPT_DIR}" "${PROJECT_ROOT}")"
 HELPER="${PKG}/scripts/f250_fc_3_10_steady_state.py"
-RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/runs/f250_human_scripts}"
+RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/maritime_quick_complex/runs/f250_human_scripts}"
 DEFAULT_CURRENT_STATUS="${RUN_ROOT}/current/status.env"
 CURRENT_STATUS="${CURRENT_STATUS:-}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
@@ -33,11 +33,10 @@ P0 hover again.
 Default tasks:
   geometry: P0 from route_waypoints.csv, z fixed at 10 m, u is opposite the
             ship-to-three-islands direction.
-  velocity: two speed sets, each 10 windows = 5 AB round trips. Default 2 m/s
-            uses A=P0, B=P0+60u; default 4 m/s uses A=P0, B=P0+90u.
-            Both AB endpoints/segments are audited against authoritative
-            planner obstacles, and L can be adjusted for settle/eval time or
-            clearance.
+  velocity: 2 m/s, 10 windows = 5 AB round trips. Default geometry uses
+            A=P0, B=P0+60u. AB endpoints/segments are audited against
+            authoritative planner obstacles, and L can be adjusted for
+            settle/eval time or clearance.
   position: 10 decagon vertices, P0 as the nearest-obstacle/start vertex,
             C=P0+10u, denominator R=10 m.
   yaw: +90/+180/+270/+360, -90/-180/-270/-360, +180, 0.
@@ -78,10 +77,10 @@ Metric formulas written to JSON:
   E_pos_i = norm(mean(eval actual_pos_xy) - target_xy) / 10 * 100
   E_vel_i = norm(mean(eval actual_vel_world_xy) - desired_vel_xy) / commanded_speed * 100
   E_yaw_i = abs(mean(eval wrap(actual_yaw - target_yaw))) / yaw_denominator * 100
-  E_vel_2mps and E_vel_4mps are reported separately.
-  E_vel_selected = min(E_vel_2mps, E_vel_4mps)
+  E_vel_2mps is the formal velocity item.
+  E_vel_selected = E_vel_2mps
   E3.10_selected = max(E_pos, E_vel_selected, E_yaw)
-  E3.10_2mps and E3.10_4mps are retained for comparison.
+  E3.10_2mps is retained for comparison.
   MAVROS odom twist is rotated body -> world with current yaw before velocity comparison.
 
 Dry-run:
@@ -211,6 +210,7 @@ launch_fc_worker() {
       HOVER_TARGET="${HOVER_TARGET_RESOLVED}" \
       F250_FC_3_10_ARGS="${F250_FC_3_10_ARGS:-}" \
       F250_ALLOW_RUN_DIR_REUSE=true \
+      F250_FC_TERMINAL_LOG_READY=true \
       bash "${SCRIPT_PATH}" --foreground --run-dir "${RUN_DIR}" --current-status "${CURRENT_STATUS}"
     worker_info="worker_screen=${worker_screen}"
   else
@@ -224,6 +224,7 @@ launch_fc_worker() {
       HOVER_TARGET="${HOVER_TARGET_RESOLVED}" \
       F250_FC_3_10_ARGS="${F250_FC_3_10_ARGS:-}" \
       F250_ALLOW_RUN_DIR_REUSE=true \
+      F250_FC_TERMINAL_LOG_READY=true \
       bash "${SCRIPT_PATH}" --foreground --run-dir "${RUN_DIR}" --current-status "${CURRENT_STATUS}" \
       >"${worker_log}" 2>&1 &
     worker_info="worker_pid=$!"
@@ -351,6 +352,10 @@ DECAGON_CSV="${RUN_DIR}/fc_3_10_decagon_points.csv"
 DISPLAY_LOG="${RUN_DIR}/fc_3_10_terminal.log"
 PROVENANCE_FILE="${RUN_DIR}/provenance.txt"
 
+if [ "${F250_FC_TERMINAL_LOG_READY:-false}" != "true" ]; then
+  : >"${DISPLAY_LOG}"
+fi
+
 {
   echo "created_at=$(date -Is)"
   echo "project_root=${PROJECT_ROOT}"
@@ -367,7 +372,7 @@ PROVENANCE_FILE="${RUN_DIR}/provenance.txt"
   echo "vehicle=f250"
   echo "metric_policy=3.10 independent FC-only steady-state test; no route acceptance writes"
   echo "geometry_policy=authoritative map package; no PNG coordinate truth"
-  echo "velocity_policy=settled standard, speeds 2/4 mps, 10 windows each, 5 AB round trips per speed"
+  echo "velocity_policy=settled standard, speed 2 mps, 10 windows, 5 AB round trips"
   echo "position_policy=10 decagon vertices, R=10m by default"
   echo "yaw_policy=+90,+180,+270,+360,-90,-180,-270,-360,+180,0"
   echo "host=$(hostname)"

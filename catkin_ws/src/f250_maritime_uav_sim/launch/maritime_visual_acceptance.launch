@@ -66,5 +66,7 @@
   </node>
 
   <node if="$(arg enable_rviz)" pkg="rviz" type="rviz" name="maritime_rviz"
-        args="-d $(arg rviz_config)" output="screen"/>
+        args="-d $(arg rviz_config)" output="screen">
+    <env name="DISABLE_ROS1_EOL_WARNINGS" value="1"/>
+  </node>
 </launch>

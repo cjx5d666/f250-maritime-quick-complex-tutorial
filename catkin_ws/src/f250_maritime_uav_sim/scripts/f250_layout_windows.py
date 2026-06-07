@@ -28,17 +28,17 @@ def screen_size():
 def layout_geometry(width, height):
     left = 64
     top = 28
-    margin = 10
-    main_w = max(800, width - left - margin)
-    gazebo_h = min(int((height - top - margin) * 0.63), 760)
-    bottom_y = top + gazebo_h + margin
-    bottom_h = max(260, height - bottom_y - margin)
-    rviz_w = int(main_w * 0.66)
-    metrics_x = left + rviz_w + margin
-    metrics_w = max(360, width - metrics_x - margin)
+    main_w = max(920, width - left)
+    main_h = max(600, height - top)
+    bottom_h = min(max(300, int(main_h * 0.36)), max(260, main_h - 360))
+    rviz_h = main_h - bottom_h
+    bottom_y = top + rviz_h
+    gazebo_w = min(max(560, int(main_w * 0.66)), main_w - 360)
+    metrics_x = left + gazebo_w
+    metrics_w = main_w - gazebo_w
     return {
-        "gazebo": (left, top, main_w, gazebo_h),
-        "rviz": (left, bottom_y, rviz_w, bottom_h),
+        "rviz": (left, top, main_w, rviz_h),
+        "gazebo": (left, bottom_y, gazebo_w, bottom_h),
         "metrics": (metrics_x, bottom_y, metrics_w, bottom_h),
     }
 

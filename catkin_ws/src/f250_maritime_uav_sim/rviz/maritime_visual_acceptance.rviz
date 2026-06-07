@@ -199,15 +199,17 @@ Visualization Manager:
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /maritime/scene_markers
-      Name: Scene Markers
+      Name: Scene Mesh + Route Markers
       Namespaces:
+        f250_maritime_dynamic_mesh: true
         f250_maritime_stage1: true
+        f250_maritime_static_mesh: true
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /maritime/inflated_obstacle_markers
-      Name: 4 Sensor Plane + Reference Safety Envelope
+      Name: 4 EGO Avoidance Layer + Sensor Context
       Namespaces:
         ego_local_planning_window: true
         lidar_horizontal_scan_plane: true

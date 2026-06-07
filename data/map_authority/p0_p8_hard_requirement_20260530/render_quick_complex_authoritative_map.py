@@ -94,6 +94,14 @@ def resolve_model_uri(uri):
     return ROOT / "catkin_ws/src/f250_maritime_uav_sim/models" / model / rest
 
 
+def package_display_path(path):
+    path = Path(path)
+    try:
+        return "${F250_PROJECT_ROOT}/" + path.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        return str(path)
+
+
 def transform_xyz(points, item):
     center = np.array(item.get("center", [0.0, 0.0, 0.0]), dtype=float)
     scale = as_scale3(item.get("scale", item.get("mesh_scale", 1.0)))
@@ -153,7 +161,7 @@ def load_visual_mesh(item):
     hull = convex_hull(world[:, :2])
     return {
         "name": item["name"],
-        "mesh_path": str(mesh_path),
+        "mesh_path": package_display_path(mesh_path),
         "style": classify_visual(item["name"]),
         "yaw": yaw_of(item),
         "vertices": int(len(vertices)),
@@ -841,7 +849,7 @@ def write_manifest(scene, meshes):
         writer.writerows(layer_rows)
 
     meta = {
-        "scene_path": str(SCENE_PATH),
+        "scene_path": package_display_path(SCENE_PATH),
         "coordinate_extent": {"x": list(X_RANGE), "y": list(Y_RANGE)},
         "source": "generated from active scene YAML plus transformed mesh/model geometry",
         "outputs": [
@@ -901,6 +909,13 @@ def write_manifest(scene, meshes):
         "retained display plot at",
         "`../../../evidence/expected_route/f250_historical_planned_vs_flown.png`.",
         "Do not overlay trajectories onto a previously rendered figure PNG.",
+        "",
+        "## RViz Display Layer",
+        "",
+        "RViz scene markers may publish additional static mesh context from the same",
+        "scene YAML `visual_vessels` entries, such as ships, islands, bridges, and wind",
+        "turbines. Those markers are visual context only and do not change planner cloud",
+        "geometry, route geometry, static obstacle safety gates, or this map authority.",
     ]
     (OUT_DIR / "README.md").write_text("\n".join(readme) + "\n", encoding="utf-8")
 

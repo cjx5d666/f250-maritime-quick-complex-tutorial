@@ -148,6 +148,105 @@ def route_display_block(status, state):
     return "\n".join(lines)
 
 
+def terminal_header_block():
+    return "\n".join([
+        "F250 P0-P8 Route started",
+        "checks OK",
+        "plan: P0 -> P8, LiDAR perception, R4_H route params",
+        "",
+        "===== route progress =====",
+        "",
+        "[route]",
+        "START from P0",
+    ])
+
+
+def waypoint_name(index):
+    return "P%d" % int(index)
+
+
+def waypoint_xyz(waypoints, index):
+    if index < 0 or index >= len(waypoints):
+        return None
+    pos = waypoints[index].get("position", [])
+    if len(pos) < 3:
+        return None
+    return [float(pos[0]), float(pos[1]), float(pos[2])]
+
+
+def waypoint_start_block(waypoints, index):
+    pos = waypoint_xyz(waypoints, index)
+    lines = ["[waypoint %s]" % waypoint_name(index)]
+    if pos is not None:
+        lines.append("target x=%.3f y=%.3f z=%.3f" % (pos[0], pos[1], pos[2]))
+    else:
+        lines.append("target unavailable")
+    lines.append("START")
+    return "\n".join(lines)
+
+
+def waypoint_stat(metric_summary, index):
+    for item in (metric_summary or {}).get("waypoints") or []:
+        try:
+            if int(item.get("index", -1)) == int(index):
+                return item
+        except (TypeError, ValueError):
+            continue
+    return {}
+
+
+def waypoint_reached_block(metric_summary, status, index):
+    stat = waypoint_stat(metric_summary, index)
+    lines = ["[waypoint %s]" % waypoint_name(index), "reached"]
+    if index == int(status.get("final_index") or 0):
+        lines.append("endpoint_error=%s" % fmt_m(status.get("endpoint_error_m")))
+    elif index > 0:
+        lines.append("keypoint_error=%s" % fmt_m(safe_float(stat.get("nearest_distance_m"))))
+    else:
+        lines.append("distance=%s" % fmt_m(safe_float(stat.get("nearest_distance_m"))))
+    lines.append("END")
+    return "\n".join(lines)
+
+
+def static_details(clearance_static):
+    actual = ((((clearance_static or {}).get("metrics") or {}).get("actual_trajectory") or {}).get("static") or {})
+    return {
+        "geometry_entry_count": int(actual.get("geometry_entry_count") or 0),
+        "cloud_entry_count": int(actual.get("cloud_entry_count") or 0),
+        "collision": bool(actual.get("collision")),
+    }
+
+
+def route_final_block(status, state, summary=None, clearance_static=None):
+    details = static_details(clearance_static)
+    duration = safe_float(((summary or {}).get("task") or {}).get("duration_sec"))
+    lines = [
+        "===== safety =====",
+        "static safety %s" % (status.get("static") or "UNKNOWN"),
+        "static geometry entry %d" % details["geometry_entry_count"],
+        "static cloud entry %d" % details["cloud_entry_count"],
+        "static collision %s" % bool_text(details["collision"]),
+        "",
+        "===== FINAL =====",
+        "progress P%d reached %d/%d" % (
+            int(status.get("progress_index") or 0),
+            int(status.get("progress_index") or 0),
+            int(status.get("final_index") or 0),
+        ),
+        "static safety %s" % (status.get("static") or "UNKNOWN"),
+        "keypoint error mean %s max %s" % (
+            fmt_m(status.get("keypoint_error_mean_m")),
+            fmt_m(status.get("keypoint_error_max_m")),
+        ),
+        "endpoint error %s" % fmt_m(status.get("endpoint_error_m")),
+    ]
+    if duration is not None:
+        lines.append("duration %.3f s" % duration)
+    if route_state_text(state) != "COMPLETE":
+        lines.append("status %s" % route_state_text(state))
+    return "\n".join(lines)
+
+
 def waypoint_count(metric_summary, fallback=9):
     route = (metric_summary or {}).get("route") or {}
     count = route.get("waypoint_count")
@@ -330,8 +429,8 @@ def append_terminal_line(path, line):
 def append_terminal_block(path, block):
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     text = block.rstrip("\n")
-    with open(path, "w", encoding="utf-8") as handle:
-        handle.write(text + "\n")
+    with open(path, "a", encoding="utf-8") as handle:
+        handle.write(text + "\n\n")
 
 
 def append_terminal_over(path):
@@ -710,7 +809,12 @@ def dry_run(args):
     acceptance = update_artifact_policy(args, metric_summary, summary, clearance_static, clearance_dynamic)
     write_status_files(args, "complete", metric_summary, summary, clearance_static)
     state = "complete" if acceptance["ok"] else "failed"
-    block = route_display_block(acceptance["terminal"], state)
+    append_terminal_block(args.terminal_log, terminal_header_block())
+    for index, _waypoint in enumerate(waypoints):
+        if index > 0:
+            append_terminal_block(args.terminal_log, waypoint_start_block(waypoints, index))
+        append_terminal_block(args.terminal_log, waypoint_reached_block(metric_summary, acceptance["terminal"], index))
+    block = route_final_block(acceptance["terminal"], state, summary, clearance_static)
     append_terminal_block(args.terminal_log, block)
     append_terminal_over(args.terminal_log)
     print(block, flush=True)
@@ -725,6 +829,7 @@ def live_monitor(args):
 
     class Monitor:
         def __init__(self):
+            self.waypoints = scene_waypoints(load_scene(args.scene_config))
             self.accumulator = MetricAccumulator(
                 args.scene_config,
                 dynamic_mode=args.dynamic_mode,
@@ -733,9 +838,11 @@ def live_monitor(args):
             self.active_goal_index = None
             self.last_progress_index = None
             self.last_p8_completed = None
+            self.last_started_index = None
             self.start_wall = time.time()
             self.deadline_wall = self.start_wall + float(args.max_duration_sec)
             self.exit_code = 1
+            append_terminal_block(args.terminal_log, terminal_header_block())
             self.timer = rospy.Timer(rospy.Duration(max(0.2, args.display_period_sec)), self.timer_cb)
             self.odom_sub = rospy.Subscriber(args.odom_topic, Odometry, self.odom_cb, queue_size=1)
             self.active_sub = rospy.Subscriber(args.active_goal_topic, PoseStamped, self.active_goal_cb, queue_size=1)
@@ -745,6 +852,9 @@ def live_monitor(args):
             position = [float(pos.x), float(pos.y), float(pos.z)]
             matched = match_waypoint_index(position, self.accumulator.stats, tolerance_m=0.35)
             if matched is not None:
+                if matched > 0 and matched != self.last_started_index:
+                    append_terminal_block(args.terminal_log, waypoint_start_block(self.waypoints, matched))
+                    self.last_started_index = matched
                 self.active_goal_index = matched
 
         def odom_cb(self, msg):
@@ -771,13 +881,19 @@ def live_monitor(args):
         def emit(self, force=False, state="running"):
             summary = self.accumulator.summary()
             status = terminal_status(summary)
-            block = route_display_block(status, state)
             progress_changed = status["progress_index"] != self.last_progress_index
             p8_changed = status["p8_completed"] != self.last_p8_completed
-            if force or progress_changed or p8_changed:
-                print(block, flush=True)
-                append_terminal_block(args.terminal_log, block)
+            if progress_changed:
+                previous = 0 if self.last_progress_index is None else int(self.last_progress_index)
+                current = int(status["progress_index"])
+                if self.last_progress_index is None and current == 0:
+                    append_terminal_block(args.terminal_log, waypoint_reached_block(summary, status, 0))
+                elif current > previous:
+                    for index in range(previous + 1, current + 1):
+                        append_terminal_block(args.terminal_log, waypoint_reached_block(summary, status, index))
                 self.last_progress_index = status["progress_index"]
+                self.last_p8_completed = status["p8_completed"]
+            elif p8_changed:
                 self.last_p8_completed = status["p8_completed"]
             write_status_files(args, state, summary, summary=None, clearance_static=None)
 
@@ -796,7 +912,7 @@ def finalize(args):
     acceptance = update_artifact_policy(args, metric_summary, summary, clearance_static, clearance_dynamic)
     state = "complete" if acceptance["ok"] else "failed"
     write_status_files(args, state, metric_summary, summary, clearance_static)
-    block = route_display_block(acceptance["terminal"], state)
+    block = route_final_block(acceptance["terminal"], state, summary, clearance_static)
     append_terminal_block(args.terminal_log, block)
     append_terminal_over(args.terminal_log)
     if args.print_final:

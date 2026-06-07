@@ -12,6 +12,24 @@
 
 路线/规划验收不包含 Metric 3.10，也不包含 yaw pass/fail。Metric 3.10 是独立的 FC-only 稳态证据。动态船只 clearance 是 telemetry；当前路线安全 gate 以静态障碍物安全为准。
 
+## 视觉展示层
+
+RViz/Gazebo 展示层保留主要视觉对象，同时调整风机与动态船只的 planner
+cloud geometry；路线点和其它静态障碍物不变：
+
+- 动态 WAM-V planner obstacle size：`[12.0, 6.0, 6.0]`，center z：`3.5`。
+- 动态 WAM-V visual mesh scale：`4.0`，mesh pose z：`-3.1`。
+- WAM-V name、yaw 和 sinusoid motion 逻辑保持不变。
+- RViz `/maritime/scene_markers` 发布静态 mesh markers：起飞邮轮/母船、
+  终点油轮、岛/山、桥、风机、救生圈。
+- RViz 同 topic 发布动态 WAM-V mesh marker。
+- RViz raw planner CUBE/CYLINDER markers 默认关闭；需要调试原始规划几何时，
+  设置 `MARITIME_SHOW_RAW_PLANNER_SHAPES=true`。
+- deck、起降区、ship hull、dock、visual_boxes 等 reference primitives 默认关闭；
+  需要调试参考几何时，设置 `MARITIME_SHOW_REFERENCE_PRIMITIVES=true`。
+- Wind-channel planner cloud boxes 几何不变，size：`[10.0, 8.0, 18.0]`，
+  center z：`9.0`；默认 RViz 画面不显示 raw boxes。
+
 ## 地图 Authority
 
 地图 authority 保留在：
@@ -88,8 +106,9 @@ E3.10_selected=2.261625026799532%
 
 分项：
 
-- 所有 40 个正式 metric windows settled。
+- 所有 30 个正式 metric windows settled。
 - `E_pos=0.727682193133525%`。
+- `E_vel_2mps=2.261625026799532%`。
 - `E_vel_selected=2.261625026799532%`。
 - `E_yaw=0.28562253585743336%`。
 - 选中速度项为 2.0 m/s。
@@ -104,4 +123,4 @@ E3.10_selected=2.261625026799532%
 - 重新运行前必须确认 PX4 overlay 已安装，并且 PX4 airframes `CMakeLists.txt` 已注册 `10020_gazebo-classic_f250`。
 - 部分保留 JSON 中的 `cache/...` 字段是历史 provenance，不是当前仓库默认运行输出路径；当前默认输出路径为 `runs/f250_human_scripts/`。
 - 大型 OBJ mesh 原样保留，便于 `git clone` 后直接使用；这些文件低于 GitHub CLI push 的 100 MiB 单文件限制，但高于浏览器上传舒适范围。
-- 仿真重跑会受到实时调度、图形环境、PX4/Gazebo 状态和依赖版本影响，数值允许存在小幅波动。
+- 仿真重跑会受到实时调度、图形环境、PX4/Gazebo 状态和依赖状态影响，数值允许存在小幅波动。

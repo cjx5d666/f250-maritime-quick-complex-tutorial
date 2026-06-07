@@ -11,8 +11,8 @@ SCRIPTS="${PKG}/scripts"
 SCENE_LEVEL_FIXED="level_m_gps_assets_quick_complex"
 SCENE_CONFIG_FIXED="${PKG}/config/scenes/${SCENE_LEVEL_FIXED}.yaml"
 WORLD_FIXED="${PKG}/worlds/maritime_${SCENE_LEVEL_FIXED}.world"
-MAP_AUTHORITY="${MAP_AUTHORITY:-${PROJECT_ROOT}/data/map_authority/p0_p8_hard_requirement_20260530}"
-R4H_BASELINE="${R4H_BASELINE:-${PROJECT_ROOT}/evidence/expected_route}"
+MAP_AUTHORITY="${MAP_AUTHORITY:-$(f250_first_existing_or_first "${PROJECT_ROOT}/maritime_quick_complex/map_authority/p0_p8_hard_requirement_20260530" "${PROJECT_ROOT}/data/map_authority/p0_p8_hard_requirement_20260530")}"
+R4H_BASELINE="${R4H_BASELINE:-$(f250_first_existing_or_first "${PROJECT_ROOT}/maritime_quick_complex/results/f250/r4h_selected_20260530" "${PROJECT_ROOT}/evidence/expected_route")}"
 
 RECORDER="${SCRIPTS}/f250_quick_complex_record.py"
 CLEARANCE_EVALUATOR="${SCRIPTS}/maritime_clearance_evaluator.py"
@@ -21,7 +21,7 @@ POSTPROCESS="${SCRIPTS}/f250_quick_complex_postprocess.py"
 DISPLAY_HELPER="${SCRIPTS}/f250_route_human_summary.py"
 START_DEMO="${SCRIPTS}/start_demo_waypoints.sh"
 
-RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/runs/f250_human_scripts}"
+RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/maritime_quick_complex/runs/f250_human_scripts}"
 DEFAULT_CURRENT_STATUS="${RUN_ROOT}/current/status.env"
 CURRENT_STATUS="${CURRENT_STATUS:-}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
@@ -52,7 +52,7 @@ Fixed task inputs:
 
 Default human mode:
   The route worker runs in a background screen/nohup worker and opens a
-  separate metrics terminal or screen that tails route_terminal.log. The
+  separate metrics terminal or screen that follows route_terminal.log. The
   calling terminal only prints run/log locations. Use --foreground for the old
   blocking behavior.
 
@@ -207,8 +207,7 @@ stop_pid() {
 terminal_command() {
   local logfile="$1"
   local heading="${2:-F250 Route Metrics}"
-  printf "touch %q; printf '%%s\\n\\n' %q; tail -n +1 -F %q" \
-    "${logfile}" "${heading}" "${logfile}"
+  printf "touch %q; tail -n +1 -F %q" "${logfile}" "${logfile}"
 }
 
 append_terminal_over() {
@@ -242,7 +241,7 @@ open_metrics_terminal() {
     echo "attach_metrics=screen -r ${screen_name}"
   else
     echo "metrics_terminal_unavailable=true"
-    echo "manual_metrics=tail -F ${logfile}"
+    echo "manual_metrics=tail -n +1 -F ${logfile}"
   fi
 }
 
@@ -269,6 +268,7 @@ launch_route_worker() {
       F250_ROUTE_ARGS="${F250_ROUTE_ARGS:-}" \
       F250_ROUTE_RECORD_PRESTART_SEC="${F250_ROUTE_RECORD_PRESTART_SEC:-}" \
       F250_ALLOW_RUN_DIR_REUSE=true \
+      F250_ROUTE_TERMINAL_LOG_READY=true \
       bash "${SCRIPT_PATH}" --foreground --run-dir "${RUN_DIR}" --current-status "${CURRENT_STATUS}"
     worker_info="worker_screen=${worker_screen}"
   else
@@ -283,6 +283,7 @@ launch_route_worker() {
       F250_ROUTE_ARGS="${F250_ROUTE_ARGS:-}" \
       F250_ROUTE_RECORD_PRESTART_SEC="${F250_ROUTE_RECORD_PRESTART_SEC:-}" \
       F250_ALLOW_RUN_DIR_REUSE=true \
+      F250_ROUTE_TERMINAL_LOG_READY=true \
       bash "${SCRIPT_PATH}" --foreground --run-dir "${RUN_DIR}" --current-status "${CURRENT_STATUS}" \
       >"${worker_log}" 2>&1 &
     worker_info="worker_pid=$!"
@@ -438,7 +439,9 @@ CLEARANCE_STATIC_LOG="${RUN_DIR}/logs/clearance_static.log"
 CLEARANCE_DYNAMIC_LOG="${RUN_DIR}/logs/clearance_dynamic.log"
 POSTPROCESS_LOG="${RUN_DIR}/logs/postprocess.log"
 
-: >"${ROUTE_TERMINAL_LOG}"
+if [ "${F250_ROUTE_TERMINAL_LOG_READY:-false}" != "true" ]; then
+  : >"${ROUTE_TERMINAL_LOG}"
+fi
 
 {
   echo "created_at=$(date -Is)"

@@ -16,6 +16,8 @@
   <arg name="marker_topic" default="/maritime/scene_markers"/>
   <arg name="inflated_marker_topic" default="/maritime/inflated_obstacle_markers"/>
   <arg name="enable_inflated_markers" default="$(optenv MARITIME_ENABLE_INFLATED_MARKERS true)"/>
+  <arg name="show_reference_primitives" default="$(optenv MARITIME_SHOW_REFERENCE_PRIMITIVES false)"/>
+  <arg name="show_raw_planner_shapes" default="$(optenv MARITIME_SHOW_RAW_PLANNER_SHAPES false)"/>
   <arg name="inflation_m" default="$(optenv EGO_OBSTACLES_INFLATION 0.5)"/>
   <arg name="path_topic" default="/maritime/mission_path"/>
   <arg name="flight_path_topic" default="/maritime/flight_path"/>
@@ -117,6 +119,8 @@
     <param name="frame_id" value="$(arg frame_id)"/>
     <param name="marker_topic" value="$(arg marker_topic)"/>
     <param name="path_topic" value="$(arg path_topic)"/>
+    <param name="show_reference_primitives" value="$(arg show_reference_primitives)" type="bool"/>
+    <param name="show_raw_planner_shapes" value="$(arg show_raw_planner_shapes)" type="bool"/>
   </node>
 
   <node if="$(arg enable_inflated_markers)" pkg="f250_maritime_uav_sim" type="maritime_inflated_obstacle_markers.py"

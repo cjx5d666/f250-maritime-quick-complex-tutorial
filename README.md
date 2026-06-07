@@ -1,10 +1,12 @@
 # F250 海事 Quick-Complex 教程
 
-这个仓库是 F250 海事 PX4/Gazebo/MAVROS/EGO-Planner quick-complex 教程本体。它不是根目录压缩包仓库；克隆后直接在仓库目录内检查、安装 overlay、构建 catkin 工作空间并运行脚本。
+这个仓库是 F250 海事 PX4/Gazebo/MAVROS/EGO-Planner quick-complex 教程本体。克隆后在仓库目录内检查环境、安装 PX4 overlay、构建 catkin 工作空间并运行脚本。
 
 已验证范围固定为 2026-05-30 P0-P8 hard-requirement quick-complex 路线、F250 参考机体、Gazebo Classic SITL、P0 悬停、独立 FC Metric 3.10 稳态检查、P0-P8 路线记录和最终 planned-vs-flown 绘图。路线几何、静态障碍物和地图 authority 固定，不在本教程中重新设计。
 
 本包在 VM 上的已知兼容环境为 Ubuntu 20.04.6、ROS Noetic、Gazebo Classic 11.15.1、MAVROS 1.20.1、PX4 v1.16.0 风格源码树。PNG 仅作展示审核，CSV/JSON/YAML/SDF 才是几何和验收依据。
+
+RViz/Gazebo 展示层包含主要 Gazebo visual mesh：起飞邮轮、终点油轮、岛/山、桥、风机、救生圈和动态 WAM-V。raw planner CUBE/CYLINDER markers 默认关闭，让 RViz 主要显示 planner cloud、EGO inflated avoidance layer、视觉 mesh 和路线点。当前动态 WAM-V planner obstacle 体积为 `[12.0, 6.0, 6.0]`、center z 为 `3.5`，视觉 mesh scale 为 `4.0`、mesh pose z 为 `-3.1`；当前风机 planner cloud boxes 体积为 `[10.0, 8.0, 18.0]`、center z 为 `9.0`，仅在 `MARITIME_SHOW_RAW_PLANNER_SHAPES=true` 时显示 raw RViz marker。
 
 ## 仓库结构
 
@@ -76,7 +78,6 @@ cd f250-maritime-quick-complex-tutorial
 scripts/check_package.sh
 ```
 
-不要在仓库根目录放教程压缩包，也不要按“解压根压缩包”的方式使用本教程。如果以后需要冻结版归档，应放在 GitHub Release asset 中，而不是仓库根目录。
 
 ## 3. 设置环境变量
 
@@ -161,6 +162,10 @@ source devel/setup.bash
 
 下面脚本都从仓库根目录运行。运行前确保已 source `env.local`、ROS 和本仓库 `catkin_ws/devel/setup.bash`。
 
+FC 3.10 和 P0-P8 路线是两个独立任务。每个任务都从干净的 P0 悬停环境开始，任务结束后停止仿真链路，避免 FC 轨迹和控制状态污染路线记录。
+
+### 任务 A：FC 3.10 稳态检查
+
 1. 启动 F250 并保持 P0 悬停：
 
 ```bash
@@ -179,19 +184,33 @@ P0 目标为：
 catkin_ws/src/f250_maritime_uav_sim/scripts/f250_run_fc_3_10_steady_state.sh
 ```
 
-3. 从当前 P0 状态释放并记录 P0-P8 路线：
+3. 停止 PX4/Gazebo/ROS/RViz/EGO-Planner 链路：
+
+```bash
+catkin_ws/src/f250_maritime_uav_sim/scripts/f250_stop_all.sh
+```
+
+### 任务 B：P0-P8 路线
+
+1. 重新启动 F250 并保持 P0 悬停：
+
+```bash
+catkin_ws/src/f250_maritime_uav_sim/scripts/f250_start_to_p0_hover.sh
+```
+
+2. 从当前 P0 状态释放并记录 P0-P8 路线：
 
 ```bash
 catkin_ws/src/f250_maritime_uav_sim/scripts/f250_run_p0_p8_route.sh
 ```
 
-4. 对最新路线生成 planned-vs-flown 图：
+3. 对最新路线生成 planned-vs-flown 图：
 
 ```bash
 catkin_ws/src/f250_maritime_uav_sim/scripts/f250_plot_latest_run.sh
 ```
 
-5. 停止 PX4/Gazebo/ROS/RViz/EGO-Planner 链路：
+4. 停止 PX4/Gazebo/ROS/RViz/EGO-Planner 链路：
 
 ```bash
 catkin_ws/src/f250_maritime_uav_sim/scripts/f250_stop_all.sh
@@ -202,6 +221,18 @@ catkin_ws/src/f250_maritime_uav_sim/scripts/f250_stop_all.sh
 ```text
 runs/f250_human_scripts/
 ```
+
+### RViz 展示层
+
+RViz 配置默认订阅 `/maritime/scene_markers`。该 topic 的 marker namespace
+包括路线/航标基础层、静态 mesh 层和动态 WAM-V mesh 层。静态 mesh 层来自
+scene YAML 的 `visual_vessels`，用于让 RViz 与 Gazebo 中的主要视觉对象一致。
+这些 marker 只用于人看展示，不改变 EGO-Planner 使用的障碍云、静态安全
+gate、P0-P8 路线或地图 authority。
+
+默认 `MARITIME_SHOW_REFERENCE_PRIMITIVES=false` 且
+`MARITIME_SHOW_RAW_PLANNER_SHAPES=false`，因此起降甲板、ship hull、dock、
+visual_boxes 和 raw planner box/cylinder 不会叠在 EGO safety envelope 上。
 
 ## 7. 验收口径
 
@@ -222,7 +253,7 @@ runs/f250_human_scripts/
 E3.10_selected=2.261625026799532%
 ```
 
-其中 `E_pos=0.727682193133525%`，`E_vel_selected=2.261625026799532%`，`E_yaw=0.28562253585743336%`。同日重复 FC 运行均 settled，但数值会有波动；以 `evidence/expected_fc_3_10/` 中保留值作为正式参考。
+其中 `E_pos=0.727682193133525%`，`E_vel_2mps=2.261625026799532%`，`E_vel_selected=2.261625026799532%`，`E_yaw=0.28562253585743336%`。同日重复 FC 运行均 settled，但数值会有波动；以 `evidence/expected_fc_3_10/` 中保留值作为正式参考。
 
 详细证据见 [VALIDATION.md](VALIDATION.md)。
 
