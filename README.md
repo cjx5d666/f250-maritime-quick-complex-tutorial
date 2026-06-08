@@ -1,8 +1,10 @@
-# F250 海事 Quick-Complex 教程
+# F250 海事 Quick-Complex 基础复现教程
 
 这个仓库是 F250 海事 PX4/Gazebo/MAVROS/EGO-Planner quick-complex 教程本体。克隆后在仓库目录内检查环境、安装 PX4 overlay、构建 catkin 工作空间并运行脚本。
 
 已验证范围固定为 2026-05-30 P0-P8 hard-requirement quick-complex 路线、F250 参考机体、Gazebo Classic SITL、P0 悬停、独立 FC Metric 3.10 稳态检查、P0-P8 路线记录和最终 planned-vs-flown 绘图。路线几何、静态障碍物和地图 authority 固定，不在本教程中重新设计。
+
+当前版本的 EGO-Planner 避障输入为 `/maritime/obstacles_cloud`。该点云主要用于稳定复现 P0-P8 路线，来自场景中配置好的障碍物几何，包括静态圆柱障碍、风机区域简化障碍盒和动态 WAM-V 小船规划障碍盒。Gazebo 中的船、岛、桥、风机等视觉模型主要用于场景展示；后续会单独整理传感器感知版本，补充 LiDAR 可扫描碰撞外壳，并加入深度相机 / LiDAR 的切换流程。
 
 本包在 VM 上的已知兼容环境为 Ubuntu 20.04.6、ROS Noetic、Gazebo Classic 11.15.1、MAVROS 1.20.1、PX4 v1.16.0 风格源码树。PNG 仅作展示审核，CSV/JSON/YAML/SDF 才是几何和验收依据。
 
