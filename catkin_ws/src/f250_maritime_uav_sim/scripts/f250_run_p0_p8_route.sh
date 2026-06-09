@@ -21,7 +21,7 @@ POSTPROCESS="${SCRIPTS}/f250_quick_complex_postprocess.py"
 DISPLAY_HELPER="${SCRIPTS}/f250_route_human_summary.py"
 START_DEMO="${SCRIPTS}/start_demo_waypoints.sh"
 
-RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/maritime_quick_complex/runs/f250_human_scripts}"
+RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/runs/f250_human_scripts}"
 DEFAULT_CURRENT_STATUS="${RUN_ROOT}/current/status.env"
 CURRENT_STATUS="${CURRENT_STATUS:-}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
@@ -36,19 +36,18 @@ Usage:
 
 Runs the F250-only maritime_quick_complex P0-P8 route from an already active
 P0 hover stack. It releases /maritime/demo/start_waypoints, records the actual
-trajectory, replays route metrics offline, evaluates static obstacle safety,
-writes dynamic boat clearance as telemetry, and prints only the human route
-indicators below:
-  1) route progress / P8 completion
-  2) static obstacle safety
-  3) keypoint error / endpoint error summary
+trajectory, replays route metrics offline, and prints only the current formal
+human route indicators below:
+  3.6 keypoint error
+  3.8 planning / route success
+  3.9 final target error
 
 Fixed task inputs:
   vehicle: f250
   route/map/scene: 2026-05-30 hard-requirement P0-P8 quick-complex
   baseline/defaults: F250 R4_H
-  terminal policy: no Metric 3.10 display, no yaw pass/fail display
-  dynamic boat clearance: telemetry only
+  terminal policy: no Metric 3.7 / 3.10 display, no yaw pass/fail display
+  obstacle clearance: telemetry/debug only, not a current terminal metric
 
 Default human mode:
   The route worker runs in a background screen/nohup worker and opens a
@@ -207,7 +206,25 @@ stop_pid() {
 terminal_command() {
   local logfile="$1"
   local heading="${2:-F250 Route Metrics}"
-  printf "touch %q; tail -n +1 -F %q" "${logfile}" "${logfile}"
+  local awk_script
+  awk_script='{
+    line=$0
+    if (line ~ /^=+/) {
+      printf "\033[1;36m%s\033[0m\n", line
+    } else if (line ~ /^\[[^]]+\]/) {
+      printf "\033[1;33m%s\033[0m\n", line
+    } else if (line ~ /result PASS/) {
+      sub(/PASS/, "\033[1;32mPASS\033[0m", line)
+      print line
+    } else if (line ~ /result FAIL/) {
+      sub(/FAIL/, "\033[1;31mFAIL\033[0m", line)
+      print line
+    } else {
+      print line
+    }
+    fflush()
+  }'
+  printf "touch %q; tail -n +1 -F %q | awk %q" "${logfile}" "${logfile}" "${awk_script}"
 }
 
 append_terminal_over() {
@@ -226,7 +243,20 @@ open_metrics_terminal() {
   [ "${F250_OPEN_METRICS_TERMINAL:-true}" = "true" ] || return 0
   local cmd
   cmd="$(terminal_command "${logfile}" "${title}")"
-  if [ -n "${DISPLAY:-}" ] && command -v x-terminal-emulator >/dev/null 2>&1; then
+  local metric_window="${SCRIPTS}/f250_metric_window.py"
+  if [ -n "${DISPLAY:-}" ] && [ -f "${metric_window}" ] && python3 - <<'PY' >/dev/null 2>&1
+import tkinter
+PY
+  then
+    nohup python3 "${metric_window}" \
+      --title "${title}" \
+      --log "${logfile}" \
+      --width "${F250_METRICS_WINDOW_WIDTH:-980}" \
+      --height "${F250_METRICS_WINDOW_HEIGHT:-520}" \
+      --font-size "${F250_METRICS_FONT_SIZE:-14}" \
+      >/dev/null 2>&1 &
+    echo "metrics_window=${title}"
+  elif [ -n "${DISPLAY:-}" ] && command -v x-terminal-emulator >/dev/null 2>&1; then
     nohup x-terminal-emulator -T "${title}" -e bash -lc "${cmd}" >/dev/null 2>&1 &
     echo "metrics_terminal=${title}"
   elif [ -n "${DISPLAY:-}" ] && command -v gnome-terminal >/dev/null 2>&1; then

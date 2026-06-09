@@ -8,7 +8,7 @@ PROJECT_ROOT="$(f250_resolve_project_root "${SCRIPT_DIR}")"
 WS="${PROJECT_ROOT}/catkin_ws"
 PKG="$(f250_resolve_package_root "${SCRIPT_DIR}" "${PROJECT_ROOT}")"
 HELPER="${PKG}/scripts/f250_fc_3_10_steady_state.py"
-RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/maritime_quick_complex/runs/f250_human_scripts}"
+RUN_ROOT="${RUN_ROOT:-${PROJECT_ROOT}/runs/f250_human_scripts}"
 DEFAULT_CURRENT_STATUS="${RUN_ROOT}/current/status.env"
 CURRENT_STATUS="${CURRENT_STATUS:-}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
@@ -76,11 +76,10 @@ Metric formulas written to JSON:
   window is not_settled and is not a formal steady-state metric.
   E_pos_i = norm(mean(eval actual_pos_xy) - target_xy) / 10 * 100
   E_vel_i = norm(mean(eval actual_vel_world_xy) - desired_vel_xy) / commanded_speed * 100
-  E_yaw_i = abs(mean(eval wrap(actual_yaw - target_yaw))) / yaw_denominator * 100
-  E_vel_2mps is the formal velocity item.
-  E_vel_selected = E_vel_2mps
-  E3.10_selected = max(E_pos, E_vel_selected, E_yaw)
-  E3.10_2mps is retained for comparison.
+  e_att_i = abs(mean(eval wrap(actual_yaw - target_yaw))) / yaw_denominator * 100
+  e_pos, e_vel, and e_att are the means over their 10 formal windows.
+  E3.10_selected = max(mean e_pos, mean e_vel, mean e_att)
+  E3.10_2mps is retained for compatibility.
   MAVROS odom twist is rotated body -> world with current yaw before velocity comparison.
 
 Dry-run:
@@ -151,7 +150,25 @@ RUN_IN_BACKGROUND="${F250_FC_BACKGROUND:-true}"
 terminal_command() {
   local logfile="$1"
   local heading="${2:-F250 FC 3.10 Metrics}"
-  printf "touch %q; tail -n +1 -F %q" "${logfile}" "${logfile}"
+  local awk_script
+  awk_script='{
+    line=$0
+    if (line ~ /^=+/) {
+      printf "\033[1;36m%s\033[0m\n", line
+    } else if (line ~ /^\[[^]]+\]/) {
+      printf "\033[1;33m%s\033[0m\n", line
+    } else if (line ~ /result PASS/) {
+      sub(/PASS/, "\033[1;32mPASS\033[0m", line)
+      print line
+    } else if (line ~ /result FAIL/) {
+      sub(/FAIL/, "\033[1;31mFAIL\033[0m", line)
+      print line
+    } else {
+      print line
+    }
+    fflush()
+  }'
+  printf "touch %q; tail -n +1 -F %q | awk %q" "${logfile}" "${logfile}" "${awk_script}"
 }
 
 append_terminal_over() {
@@ -170,7 +187,20 @@ open_metrics_terminal() {
   [ "${F250_OPEN_METRICS_TERMINAL:-true}" = "true" ] || return 0
   local cmd
   cmd="$(terminal_command "${logfile}" "${title}")"
-  if [ -n "${DISPLAY:-}" ] && command -v x-terminal-emulator >/dev/null 2>&1; then
+  local metric_window="${PKG}/scripts/f250_metric_window.py"
+  if [ -n "${DISPLAY:-}" ] && [ -f "${metric_window}" ] && python3 - <<'PY' >/dev/null 2>&1
+import tkinter
+PY
+  then
+    nohup python3 "${metric_window}" \
+      --title "${title}" \
+      --log "${logfile}" \
+      --width "${F250_METRICS_WINDOW_WIDTH:-980}" \
+      --height "${F250_METRICS_WINDOW_HEIGHT:-520}" \
+      --font-size "${F250_METRICS_FONT_SIZE:-14}" \
+      >/dev/null 2>&1 &
+    echo "metrics_window=${title}"
+  elif [ -n "${DISPLAY:-}" ] && command -v x-terminal-emulator >/dev/null 2>&1; then
     nohup x-terminal-emulator -T "${title}" -e bash -lc "${cmd}" >/dev/null 2>&1 &
     echo "metrics_terminal=${title}"
   elif [ -n "${DISPLAY:-}" ] && command -v gnome-terminal >/dev/null 2>&1; then

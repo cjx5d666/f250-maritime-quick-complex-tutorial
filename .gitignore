@@ -1,10 +1,16 @@
 # Runtime outputs
 /runs/
+/runs
 /cache/
+/cache
 /logs/
+/logs
 /log/
+/log
 /bags/
+/bags
 /ulogs/
+/ulogs
 *.bag
 *.ulg
 *.mcap

@@ -10,7 +10,7 @@
 - 路线证据：`evidence/expected_route/`。
 - FC Metric 3.10 证据：`evidence/expected_fc_3_10/`。
 
-路线/规划验收不包含 Metric 3.10，也不包含 yaw pass/fail。Metric 3.10 是独立的 FC-only 稳态证据。动态船只 clearance 是 telemetry；当前路线安全 gate 以静态障碍物安全为准。
+路线/规划验收终端只显示当前汇报使用的 `3.6`、`3.8` 和 `3.9`。Metric 3.10 是独立的 FC-only 稳态证据，不进入路线通过/失败判定；yaw pass/fail、Dsafe 和静态安全 gate 不再作为路线终端指标显示。动态船只 clearance 与静态 clearance 仍写入 JSON/日志，作为审计与调试材料。
 
 ## 视觉展示层
 
@@ -58,29 +58,27 @@ data/map_authority/p0_p8_hard_requirement_20260530/
 evidence/expected_route/
 ```
 
-最终选择：
+仓库内 `evidence/expected_route/` 仍保留历史 R4_H 参考证据，用于说明路线几何和早期选择依据。2026-06-09 VM 实机重跑的当前终端验收结果为：
 
-- 家族：R4_H。
-- 选中运行：`runs/lidar_lidar_R4_H_r2/`。
-- 选择摘要：`final_selection.json`、`selection_summary.csv`。
-- 选中轨迹：`selected_actual_trajectory.csv`。
-- 审核展示图：`f250_historical_planned_vs_flown.png`。
+```text
+run: runs/f250_human_scripts/f250_p0_p8_route_20260609_031417
+3.6 keypoint arrival error mean = 1.664%
+3.6 keypoint arrival error max  = 5.074%
+3.8 planning / route success    = 8/8 = 100.0%
+3.9 final target error          = 0.180%
+result PASS
+```
 
-代表结果：
+对应 JSON 值：
 
-- P8 reached：true。
-- stop reason：`final_hold_reached`。
-- 静态安全：SAFE。
-- 静态 geometry entry：0。
-- 静态 cloud entry：0。
-- 静态 collision：false。
-- 选中运行静态 clearance：0.8086800027841847 m。
-- P1-P7 keypoint error mean：0.238261136879 m。
-- P1-P7 keypoint error max：0.458080235519 m。
-- P8 endpoint error：0.5952538810440474 m。
-- P0-P8 任务时长：113.361 s。
+- `metric_3_6.mean_error_ratio=0.016637490559317753`。
+- `metric_3_6.max_error_ratio=0.05073716207912651`。
+- `metric_3_8.max_active_goal_index=8`，`required_final_goal_index=8`。
+- `metric_3_9.final_error_m=0.559071258848178`。
+- `metric_3_9.final_error_ratio=0.0018037512663880706`。
+- `route.total_p0_p8_length_m=309.9491982437759`。
 
-`evidence/expected_route/zyaw_metrics/` 保留 yaw 相关复核材料，但 yaw pass/fail 不进入当前路线验收口径。
+路线终端会在 P1-P8 逐点显示 `reached n/8` 和成功率。每个 keypoint 的 3.6 百分比与 P8 的 3.9 百分比在任务结束后由离线 `metric_summary.json` 打印，因此不会受途中 active-nearest 临时值影响。`evidence/expected_route/zyaw_metrics/` 保留 yaw 相关复核材料，但 yaw pass/fail 不进入当前路线验收口径。
 
 ## FC Metric 3.10 证据
 
@@ -98,23 +96,28 @@ evidence/expected_fc_3_10/
 - `fc_3_10_geometry_audit.json`：A/B 与 decagon 几何安全审计。
 - `fc_3_10_decagon_points.csv`：位置项 decagon 点。
 
-正式保留值：
+2026-06-09 VM 实机重跑值：
 
 ```text
-E3.10_selected=2.261625026799532%
+run: runs/f250_human_scripts/f250_fc_3_10_steady_state_20260609_032735
+3.10 e_pos mean = 0.371%
+3.10 e_vel mean = 2.099%
+3.10 e_att mean = 0.122%
+3.10 control stability error = 2.099%
+result PASS
 ```
 
 分项：
 
 - 所有 30 个正式 metric windows settled。
-- `E_pos=0.727682193133525%`。
-- `E_vel_2mps=2.261625026799532%`。
-- `E_vel_selected=2.261625026799532%`。
-- `E_yaw=0.28562253585743336%`。
+- `E_pos=0.37096258341386323%`。
+- `E_vel_2mps=2.098646302206202%`。
+- `E_vel_selected=2.098646302206202%`。
+- `E_yaw=0.12206005408457488%`，终端显示为 `e_att`。
 - 选中速度项为 2.0 m/s。
 - 几何审计结论：FC 3.10 A/B 和 decagon 几何 SAFE。
 
-同日重复 FC 运行 settled，但数值存在波动；本仓库保留值是正式参考证据，不代表每次重跑会逐字节一致。
+3.10 现在使用每类 10 个正式窗口的均值，再取 `max(mean e_pos, mean e_vel, mean e_att)` 作为最终 `3.10 control stability error`。同日重复 FC 运行 settled，但数值存在波动；不要求每次重跑逐字节一致。
 
 ## Caveats
 

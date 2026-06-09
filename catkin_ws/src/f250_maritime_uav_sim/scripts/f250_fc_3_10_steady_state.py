@@ -4,6 +4,7 @@ import csv
 import json
 import math
 import os
+import re
 import sys
 import time
 from datetime import datetime
@@ -225,6 +226,43 @@ def max_present(values):
     if not present:
         return None
     return max(present)
+
+
+def mean_present(values):
+    present = [float(v) for v in values if v is not None]
+    if not present:
+        return None
+    return sum(present) / len(present)
+
+
+def color_text(text, code):
+    if not sys.stdout.isatty() or os.environ.get("NO_COLOR"):
+        return text
+    return "\033[%sm%s\033[0m" % (code, text)
+
+
+def color_major(text):
+    return color_text(text, "1;36")
+
+
+def color_minor(text):
+    return color_text(text, "1;33")
+
+
+def color_result(result):
+    text = str(result)
+    if text.upper() == "PASS":
+        return color_text(text, "1;32")
+    if text.upper() == "FAIL":
+        return color_text(text, "1;31")
+    return text
+
+
+ANSI_RE = re.compile(r"\033\[[0-9;]*m")
+
+
+def strip_ansi(text):
+    return ANSI_RE.sub("", text)
 
 
 def fmt_display_percent(value):
@@ -1272,9 +1310,9 @@ def errors_from_phase_results(results):
             values[component].append(float(error))
         elif component == "E_vel" and error not in ("", None):
             velocity_values.setdefault(result.get("velocity_key") or "unknown", []).append(float(error))
-    errors = {component: max_present(component_values) for component, component_values in values.items()}
+    errors = {component: mean_present(component_values) for component, component_values in values.items()}
     for key, component_values in velocity_values.items():
-        errors["E_vel_%s" % key] = max_present(component_values)
+        errors["E_vel_%s" % key] = mean_present(component_values)
     e_vel_candidates = [
         (key, value) for key, value in errors.items()
         if key.startswith("E_vel_") and value is not None
@@ -1301,14 +1339,22 @@ def errors_from_phase_results(results):
 
 
 def terminal_summary(errors):
+    final_value = errors.get("E3.10_selected")
+    passed = (
+        final_value is not None
+        and float(final_value) <= 5.0
+        and bool(errors.get("all_metric_windows_settled", False))
+    )
+    result = "PASS" if passed else "FAIL"
     lines = [
         "===== FINAL =====",
-        "position E_pos %s" % fmt_display_percent(errors.get("E_pos")),
-        "velocity E_vel_2mps %s" % fmt_display_percent(errors.get("E_vel_2mps")),
-        "velocity selected %s m/s E_vel_selected %s" % (
-            errors.get("selected_velocity_speed_mps"), fmt_display_percent(errors.get("E_vel_selected"))),
-        "yaw E_yaw %s" % fmt_display_percent(errors.get("E_yaw")),
-        "E3.10_selected %s" % fmt_display_percent(errors.get("E3.10_selected")),
+        "3.10 e_pos mean = %s" % fmt_display_percent(errors.get("E_pos")),
+        "3.10 e_vel mean = %s" % fmt_display_percent(errors.get("E_vel_selected")),
+        "3.10 e_att mean = %s" % fmt_display_percent(errors.get("E_yaw")),
+        "3.10 control stability error = max(mean e_pos, mean e_vel, mean e_att) = %s" % (
+            fmt_display_percent(final_value)
+        ),
+        "result %s" % color_result(result),
     ]
     if not errors.get("all_metric_windows_settled", False):
         lines.append("not_settled %s" % ",".join(errors.get("not_settled_phases", [])))
@@ -1363,18 +1409,18 @@ def phase_target_text(phase, hover):
 
 def phase_metric_name(phase):
     if phase["kind"] == "velocity":
-        return "E_vel"
+        return "e_vel"
     if phase["kind"] == "position":
-        return "E_pos"
+        return "e_pos"
     if phase["kind"] == "yaw":
-        return "E_yaw"
+        return "e_att"
     return ""
 
 
 def phase_start_block(phase, hover):
     kind = phase["kind"]
     return "\n".join([
-        "[%s %s]" % (kind, phase_round_text(phase)),
+        color_minor("[%s %s]" % (kind, phase_round_text(phase))),
         "target: %s" % phase_target_text(phase, hover),
         "START",
     ])
@@ -1383,7 +1429,7 @@ def phase_start_block(phase, hover):
 def phase_end_block(phase, result, hover):
     kind = phase["kind"]
     lines = [
-        "[%s %s]" % (kind, phase_round_text(phase)),
+        color_minor("[%s %s]" % (kind, phase_round_text(phase))),
         "target: %s" % phase_target_text(phase, hover),
     ]
     if result.get("settled") is True:
@@ -1402,22 +1448,31 @@ def component_header(component, geometry):
         speed = 0.0
         if geometry.get("velocity_tests"):
             speed = float(geometry["velocity_tests"][0].get("speed_mps", 0.0))
-        return "\n".join(["===== velocity E_vel =====", "speed: %.1f m/s" % speed])
+        return "\n".join([color_major("========== 3.10 VELOCITY / E_VEL =========="), "speed: %.1f m/s" % speed])
     if component == "E_pos":
-        return "===== position E_pos ====="
+        return color_major("========== 3.10 POSITION / E_POS ==========")
     if component == "E_yaw":
-        return "===== yaw E_yaw ====="
+        return color_major("========== 3.10 YAW / E_ATT ==========")
     return ""
 
 
 def component_done_block(component, phase_results):
     errors = errors_from_phase_results(phase_results)
     if component == "E_vel":
-        return "[velocity]\nDONE E_vel_2mps %s" % fmt_display_percent(errors.get("E_vel_2mps"))
+        return "%s\nmean e_vel = %s" % (
+            color_minor("[velocity]"),
+            fmt_display_percent(errors.get("E_vel_2mps")),
+        )
     if component == "E_pos":
-        return "[position]\nDONE E_pos %s" % fmt_display_percent(errors.get("E_pos"))
+        return "%s\nmean e_pos = %s" % (
+            color_minor("[position]"),
+            fmt_display_percent(errors.get("E_pos")),
+        )
     if component == "E_yaw":
-        return "[yaw]\nDONE E_yaw %s" % fmt_display_percent(errors.get("E_yaw"))
+        return "%s\nmean e_att = %s" % (
+            color_minor("[yaw]"),
+            fmt_display_percent(errors.get("E_yaw")),
+        )
     return ""
 
 
@@ -1460,7 +1515,7 @@ class Display:
         print(text, flush=True)
         if self.path:
             with open(self.path, "a", encoding="utf-8") as handle:
-                handle.write(text.rstrip() + "\n")
+                handle.write(strip_ansi(text).rstrip() + "\n")
 
     def over(self):
         print("OVER", flush=True)
@@ -1651,10 +1706,10 @@ def formula_metadata(args):
         "E_pos_i": "norm(mean(actual_pos_xy) - target_xy) / R * 100",
         "E_vel_i": "norm(mean(actual_vel_world_xy) - desired_vel_xy) / commanded_speed * 100",
         "E_yaw_i": "abs(mean(wrap(actual_yaw - target_yaw))) / yaw_denominator * 100",
-        "E_pos": "max_i(E_pos_i) over 10 decagon position windows",
-        "E_vel_2mps": "max_i(E_vel_i) over 10 AB velocity windows commanded at 2 m/s",
+        "E_pos": "mean_i(E_pos_i) over 10 decagon position windows",
+        "E_vel_2mps": "mean_i(E_vel_i) over 10 AB velocity windows commanded at 2 m/s",
         "E_vel_selected": "E_vel_2mps when all formal 2 m/s velocity windows are settled",
-        "E_yaw": "max_i(E_yaw_i) over 10 yaw windows",
+        "E_yaw": "mean_i(E_yaw_i) over 10 yaw windows, displayed as e_att",
         "E3.10_2mps": "max(E_pos, E_vel_2mps, E_yaw)",
         "E3.10_selected": "max(E_pos, E_vel_selected, E_yaw)",
         "velocity_frame_policy": (

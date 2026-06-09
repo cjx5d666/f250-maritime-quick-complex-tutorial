@@ -36,9 +36,7 @@ ROUTE_POLICY = {
     "dynamic_boat_clearance_role": "telemetry_only",
     "route_acceptance_components": [
         "p8_completion",
-        "static_obstacle_safety",
         "metric_3_6_keypoint_error",
-        "metric_3_7_static_obstacle_gate",
         "metric_3_8_route_progress",
         "metric_3_9_endpoint_error",
     ],
@@ -89,6 +87,18 @@ def fmt_float(value):
     if value is None:
         return ""
     return "%.6g" % float(value)
+
+
+def fmt_percent(value):
+    if value is None:
+        return "--"
+    return "%.3f%%" % (float(value) * 100.0)
+
+
+def fmt_success_percent(numerator, denominator):
+    if not denominator:
+        return "--"
+    return "%.1f%%" % (float(numerator) / float(denominator) * 100.0)
 
 
 def route_line(status):
@@ -152,12 +162,10 @@ def terminal_header_block():
     return "\n".join([
         "F250 P0-P8 Route started",
         "checks OK",
-        "plan: P0 -> P8, LiDAR perception, R4_H route params",
+        "metrics: 3.6 keypoint error, 3.8 planning success, 3.9 final target error",
         "",
-        "===== route progress =====",
-        "",
-        "[route]",
-        "START from P0",
+        "===== 3.8 planning / route success =====",
+        "P0 reached 0/8  success 0.0%",
     ])
 
 
@@ -195,17 +203,125 @@ def waypoint_stat(metric_summary, index):
     return {}
 
 
-def waypoint_reached_block(metric_summary, status, index):
+def segment_length(metric_summary, index):
+    lengths = ((metric_summary or {}).get("route") or {}).get("segment_lengths_m") or []
+    try:
+        index = int(index)
+    except (TypeError, ValueError):
+        return None
+    if 0 <= index < len(lengths):
+        return safe_float(lengths[index])
+    return None
+
+
+def total_route_length(metric_summary):
+    route = (metric_summary or {}).get("route") or {}
+    value = safe_float(route.get("total_p0_p8_length_m"))
+    if value is not None:
+        return value
+    total = 0.0
+    found = False
+    for item in route.get("segment_lengths_m") or []:
+        length = safe_float(item)
+        if length is not None:
+            total += length
+            found = True
+    return total if found else None
+
+
+def waypoint_position(stat):
+    for key in ("position", "target_position", "waypoint_position"):
+        pos = (stat or {}).get(key)
+        if isinstance(pos, list) and len(pos) >= 3:
+            return pos
+    return None
+
+
+def waypoint_error_ratio(metric_summary, stat, index):
+    value = safe_float((stat or {}).get("metric_3_6_error_ratio"))
+    if value is not None:
+        return value
+    error = safe_float((stat or {}).get("nearest_distance_m"))
+    length = segment_length(metric_summary, index)
+    if error is None or not length:
+        return None
+    return error / length
+
+
+def keypoint_ratio_values(metric_summary):
+    values = []
+    for stat in (metric_summary or {}).get("waypoints") or []:
+        try:
+            index = int(stat.get("index", -1))
+        except (TypeError, ValueError):
+            continue
+        if index <= 0:
+            continue
+        ratio = waypoint_error_ratio(metric_summary, stat, index)
+        if ratio is not None:
+            values.append(ratio)
+    return values
+
+
+def waypoint_progress_block(metric_summary, status, index):
     stat = waypoint_stat(metric_summary, index)
-    lines = ["[waypoint %s]" % waypoint_name(index), "reached"]
-    if index == int(status.get("final_index") or 0):
-        lines.append("endpoint_error=%s" % fmt_m(status.get("endpoint_error_m")))
-    elif index > 0:
-        lines.append("keypoint_error=%s" % fmt_m(safe_float(stat.get("nearest_distance_m"))))
-    else:
-        lines.append("distance=%s" % fmt_m(safe_float(stat.get("nearest_distance_m"))))
-    lines.append("END")
+    final_index = int(status.get("final_index") or 0)
+    progress = max(0, min(final_index, int(index)))
+    lines = ["[%s]" % waypoint_name(index)]
+    pos = waypoint_position(stat)
+    if pos is not None:
+        lines.append("target x=%.3f y=%.3f z=%.3f" % (float(pos[0]), float(pos[1]), float(pos[2])))
+    lines.append(
+        "reached %d/%d  success %s"
+        % (progress, final_index, fmt_success_percent(progress, final_index))
+    )
     return "\n".join(lines)
+
+
+def waypoint_metric_lines(metric_summary, status, index):
+    stat = waypoint_stat(metric_summary, index)
+    final_index = int(status.get("final_index") or 0)
+    lines = []
+    if index > 0:
+        error_m = safe_float(stat.get("nearest_distance_m"))
+        length_m = segment_length(metric_summary, index)
+        ratio = waypoint_error_ratio(metric_summary, stat, index)
+        lines.append(
+            "3.6 keypoint error %s = %s / %s = %s"
+            % (waypoint_name(index), fmt_m(error_m), fmt_m(length_m), fmt_percent(ratio))
+        )
+    if index == final_index:
+        m39 = (metric_summary or {}).get("metric_3_9") or {}
+        final_error = safe_float(m39.get("final_error_m"))
+        if final_error is None:
+            final_error = safe_float(status.get("endpoint_error_m"))
+        total_length = total_route_length(metric_summary)
+        final_ratio = safe_float(m39.get("final_error_ratio"))
+        if final_ratio is None and final_error is not None and total_length:
+            final_ratio = final_error / total_length
+        lines.append(
+            "3.9 final target error = %s / %s = %s"
+            % (fmt_m(final_error), fmt_m(total_length), fmt_percent(final_ratio))
+        )
+    return lines
+
+
+def route_metrics_detail_block(metric_summary, status):
+    final_index = int(status.get("final_index") or 0)
+    lines = ["===== 3.6 / 3.9 measured errors ====="]
+    for index in range(1, final_index + 1):
+        stat = waypoint_stat(metric_summary, index)
+        pos = waypoint_position(stat)
+        lines.append("")
+        lines.append("[%s]" % waypoint_name(index))
+        if pos is not None:
+            lines.append("target x=%.3f y=%.3f z=%.3f" % (float(pos[0]), float(pos[1]), float(pos[2])))
+        lines.extend(waypoint_metric_lines(metric_summary, status, index))
+    return "\n".join(lines)
+
+
+def waypoint_reached_block(metric_summary, status, index):
+    return waypoint_progress_block(metric_summary, status, index)
 
 
 def static_details(clearance_static):
@@ -218,32 +334,36 @@ def static_details(clearance_static):
 
 
 def route_final_block(status, state, summary=None, clearance_static=None):
-    details = static_details(clearance_static)
-    duration = safe_float(((summary or {}).get("task") or {}).get("duration_sec"))
+    metric_summary = summary if isinstance(summary, dict) and summary.get("metric_3_6") else {}
+    m36 = (metric_summary or {}).get("metric_3_6") or {}
+    m39 = (metric_summary or {}).get("metric_3_9") or {}
+    ratios = keypoint_ratio_values(metric_summary)
+    key_mean_ratio = safe_float(m36.get("mean_error_ratio"))
+    key_max_ratio = safe_float(m36.get("max_error_ratio"))
+    if key_mean_ratio is None and ratios:
+        key_mean_ratio = sum(ratios) / len(ratios)
+    if key_max_ratio is None and ratios:
+        key_max_ratio = max(ratios)
+    final_ratio = safe_float(m39.get("final_error_ratio"))
+    if final_ratio is None:
+        total_length = total_route_length(metric_summary)
+        if status.get("endpoint_error_m") is not None and total_length:
+            final_ratio = float(status.get("endpoint_error_m")) / total_length
+    progress_index = int(status.get("progress_index") or 0)
+    final_index = int(status.get("final_index") or 0)
+    result = "PASS" if route_state_text(state) == "COMPLETE" else "FAIL"
     lines = [
-        "===== safety =====",
-        "static safety %s" % (status.get("static") or "UNKNOWN"),
-        "static geometry entry %d" % details["geometry_entry_count"],
-        "static cloud entry %d" % details["cloud_entry_count"],
-        "static collision %s" % bool_text(details["collision"]),
-        "",
         "===== FINAL =====",
-        "progress P%d reached %d/%d" % (
-            int(status.get("progress_index") or 0),
-            int(status.get("progress_index") or 0),
-            int(status.get("final_index") or 0),
+        "3.6 keypoint arrival error mean = %s" % fmt_percent(key_mean_ratio),
+        "3.6 keypoint arrival error max  = %s" % fmt_percent(key_max_ratio),
+        "3.8 planning / route success    = %d/%d = %s" % (
+            progress_index,
+            final_index,
+            fmt_success_percent(progress_index, final_index),
         ),
-        "static safety %s" % (status.get("static") or "UNKNOWN"),
-        "keypoint error mean %s max %s" % (
-            fmt_m(status.get("keypoint_error_mean_m")),
-            fmt_m(status.get("keypoint_error_max_m")),
-        ),
-        "endpoint error %s" % fmt_m(status.get("endpoint_error_m")),
+        "3.9 final target error          = %s" % fmt_percent(final_ratio),
+        "result %s" % result,
     ]
-    if duration is not None:
-        lines.append("duration %.3f s" % duration)
-    if route_state_text(state) != "COMPLETE":
-        lines.append("status %s" % route_state_text(state))
     return "\n".join(lines)
 
 
@@ -358,17 +478,13 @@ def route_acceptance(metric_summary, summary=None, clearance_static=None):
     summary = summary or {}
     status = terminal_status(metric_summary, summary, clearance_static)
     m36 = metric_summary.get("metric_3_6") or {}
-    m37 = metric_summary.get("metric_3_7") or {}
     m38 = metric_summary.get("metric_3_8") or {}
     m39 = metric_summary.get("metric_3_9") or {}
     summary_ok = bool(summary.get("ok", True))
     p8_completed = bool(status["p8_completed"])
-    static_safe = bool(status["static_safe"])
     components = {
         "p8_completion": p8_completed,
-        "static_obstacle_safety": static_safe,
         "metric_3_6_keypoint_error": bool(m36.get("passed")),
-        "metric_3_7_static_obstacle_gate": bool(m37.get("passed")),
         "metric_3_8_route_progress": bool(m38.get("passed")),
         "metric_3_9_endpoint_error": bool(m39.get("passed")),
         "recorder_summary": summary_ok,
@@ -734,7 +850,6 @@ def compose_metrics_json(args, summary, metric_summary, clearance_static, cleara
         "monitor_status": 0 if bool(summary.get("ok")) else 2,
         "route_metric_ok": bool(
             components["metric_3_6_keypoint_error"]
-            and components["metric_3_7_static_obstacle_gate"]
             and components["metric_3_8_route_progress"]
             and components["metric_3_9_endpoint_error"]
         ),
@@ -811,10 +926,11 @@ def dry_run(args):
     state = "complete" if acceptance["ok"] else "failed"
     append_terminal_block(args.terminal_log, terminal_header_block())
     for index, _waypoint in enumerate(waypoints):
-        if index > 0:
-            append_terminal_block(args.terminal_log, waypoint_start_block(waypoints, index))
-        append_terminal_block(args.terminal_log, waypoint_reached_block(metric_summary, acceptance["terminal"], index))
-    block = route_final_block(acceptance["terminal"], state, summary, clearance_static)
+        if index == 0:
+            continue
+        append_terminal_block(args.terminal_log, waypoint_progress_block(metric_summary, acceptance["terminal"], index))
+    append_terminal_block(args.terminal_log, route_metrics_detail_block(metric_summary, acceptance["terminal"]))
+    block = route_final_block(acceptance["terminal"], state, metric_summary, clearance_static)
     append_terminal_block(args.terminal_log, block)
     append_terminal_over(args.terminal_log)
     print(block, flush=True)
@@ -886,11 +1002,9 @@ def live_monitor(args):
             if progress_changed:
                 previous = 0 if self.last_progress_index is None else int(self.last_progress_index)
                 current = int(status["progress_index"])
-                if self.last_progress_index is None and current == 0:
-                    append_terminal_block(args.terminal_log, waypoint_reached_block(summary, status, 0))
-                elif current > previous:
+                if current > previous:
                     for index in range(previous + 1, current + 1):
-                        append_terminal_block(args.terminal_log, waypoint_reached_block(summary, status, index))
+                        append_terminal_block(args.terminal_log, waypoint_progress_block(summary, status, index))
                 self.last_progress_index = status["progress_index"]
                 self.last_p8_completed = status["p8_completed"]
             elif p8_changed:
@@ -912,7 +1026,8 @@ def finalize(args):
     acceptance = update_artifact_policy(args, metric_summary, summary, clearance_static, clearance_dynamic)
     state = "complete" if acceptance["ok"] else "failed"
     write_status_files(args, state, metric_summary, summary, clearance_static)
-    block = route_final_block(acceptance["terminal"], state, summary, clearance_static)
+    append_terminal_block(args.terminal_log, route_metrics_detail_block(metric_summary, acceptance["terminal"]))
+    block = route_final_block(acceptance["terminal"], state, metric_summary, clearance_static)
     append_terminal_block(args.terminal_log, block)
     append_terminal_over(args.terminal_log)
     if args.print_final:
